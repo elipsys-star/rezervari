@@ -47,14 +47,14 @@ button{cursor:pointer}
 svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 
 /* bara de sus */
-.appbar{position:sticky;top:0;z-index:12;min-height:48px;background:var(--appbar);color:var(--appbar-ink);display:flex;align-items:center;gap:12px;
+.appbar{position:sticky;top:0;z-index:12;min-height:60px;background:var(--appbar);color:var(--appbar-ink);display:flex;align-items:center;gap:12px;
   padding:env(safe-area-inset-top,0px) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}
 .brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
-.brand h1{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.brand h1{font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .brand .logo+h1{border-left:1px solid rgba(255,255,255,.45);padding-left:12px}
 .eyebrow{font-size:13px;font-weight:600;white-space:nowrap}
 .eyebrow b{display:inline-block;width:10px;height:10px;background:var(--chalk);border-radius:2px;margin-right:6px}
-.logo{display:block;flex:none;height:30px;width:auto;aspect-ratio:700/231;object-fit:contain;background:#fff;border-radius:var(--r);padding:3px 6px;box-sizing:content-box}
+.logo{display:block;flex:none;height:42px;width:auto;aspect-ratio:700/231;object-fit:contain;background:#fff;border-radius:var(--r);padding:3px 6px;box-sizing:content-box}
 .who{display:flex;gap:10px;align-items:center;font-size:13px}
 .avatar{width:32px;height:32px;border-radius:50%;background:#fff;color:var(--appbar);display:inline-grid;place-items:center;font-weight:600;font-size:13px;flex:none}
 .appbar .linkbtn{color:var(--appbar-ink);text-decoration:underline}
@@ -66,9 +66,9 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 /* structura: bara de navigare + conținut */
 #notice{margin:12px 20px 0}
 #screen{padding:20px}
-.shell{display:grid;grid-template-columns:72px minmax(0,1fr);min-height:calc(100vh - 48px)}
+.shell{display:grid;grid-template-columns:72px minmax(0,1fr);min-height:calc(100vh - 60px)}
 .rail{display:flex;flex-direction:column;gap:2px;padding:8px 4px;border-right:1px solid var(--line);background:var(--surface);
-  position:sticky;top:48px;height:calc(100vh - 48px);overflow-y:auto}
+  position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
 .rail button{position:relative;border:0;background:transparent;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;gap:3px;
   padding:8px 2px;font-size:10.5px;line-height:1.2;color:var(--muted);text-align:center}
 .rail button svg.i{width:22px;height:22px}
@@ -81,14 +81,45 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 /* calendar */
 .cal-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;align-items:start}
 .calmain{display:flex;flex-direction:column;gap:12px;min-width:0}
-.eqpane{background:var(--surface);border-radius:var(--r2);box-shadow:var(--sh2);padding:12px 6px;position:sticky;top:64px}
+.eqpane{background:var(--surface);border-radius:var(--r2);box-shadow:var(--sh2);padding:12px 6px;position:sticky;top:76px}
 .eqpane h2{font-size:12px;font-weight:600;color:var(--muted);padding:0 10px 6px}
 .eqpane .chips{flex-direction:column;gap:2px}
 #eqchips .chip{border:0;background:transparent;width:100%;padding:7px 10px;justify-content:flex-start;font-weight:400;border-radius:var(--r)}
-#eqchips .chip::before{content:"";width:12px;height:12px;border-radius:2px;border:2px solid var(--accent);flex:none}
 #eqchips .chip:hover{background:var(--sunk)}
-#eqchips .chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
-#eqchips .chip[aria-pressed="true"]::before{background:var(--accent)}
+#eqchips .chip .eqi{color:var(--muted)}
+#eqchips .chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink);font-weight:600;box-shadow:inset 3px 0 0 var(--accent)}
+#eqchips .chip[aria-pressed="true"] .eqi{color:var(--accent)}
+.eqi{display:inline-flex;flex:none;color:var(--accent)}
+.eqi svg.i{width:20px;height:20px}
+.eqi.lg{width:40px;height:40px;border-radius:var(--r2);background:var(--accent-soft);align-items:center;justify-content:center}
+.eqi.lg svg.i{width:24px;height:24px}
+.iconpick{display:flex;flex-wrap:wrap;gap:6px}
+.ipk{display:inline-flex;align-items:center;gap:6px;min-width:40px;height:40px;padding:0 9px;border:1px solid var(--line2);background:var(--surface);border-radius:var(--r);color:var(--ink);font-weight:400;font-size:13px;justify-content:center}
+.ipk:hover{background:var(--sunk)}
+.ipk[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.ipk .eqi{color:inherit}
+.ipk[aria-checked="true"] .eqi{color:var(--accent)}
+.vswitch{display:inline-flex;margin-left:auto;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden}
+.vswitch button{border:0;background:transparent;padding:4px 12px;min-height:30px;font-weight:600;color:var(--muted)}
+.vswitch button+button{border-left:1px solid var(--line2)}
+.vswitch button:hover{background:var(--sunk);color:var(--ink)}
+.vswitch button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.cell .bk{font-size:12px;line-height:1.3;color:var(--ink);border-left:3px solid var(--accent-line);padding:1px 0 1px 6px;margin-top:2px}
+.cell .bk.me{border-left-color:var(--accent)}
+.cell .bk small{color:var(--muted)}
+table.mo{min-width:560px}
+.mo thead th:first-child{width:auto}
+.mo td{vertical-align:top}
+.daycell{display:flex;flex-direction:column;gap:6px;width:100%;min-height:92px;border:0;background:transparent;text-align:left;padding:6px 8px;font-size:12px}
+.daycell:hover{background:var(--accent-soft)}
+.daycell .dn{font-family:var(--f-display);font-size:16px;font-weight:600;line-height:1.2}
+.daycell.out{opacity:.45}
+.daycell.today .dn{color:#fff;background:var(--primary);border-radius:999px;align-self:flex-start;padding:0 8px}
+.daycell.has-mine{box-shadow:inset 3px 0 0 var(--accent)}
+.daycell .sum{color:var(--muted)}
+.daycell .sum b{color:var(--ink)}
+.daycell.full .sum b{color:var(--bad)} .daycell.warn .sum b{color:var(--warn)}
+.daycell .meter i{background:var(--ok)} .daycell.warn .meter i{background:var(--warn)} .daycell.full .meter i{background:var(--bad)}
 #eqchips .chip small{margin-left:auto}
 .cmdbar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;background:var(--surface);border-radius:var(--r2);box-shadow:var(--sh2);padding:6px 8px}
 .cmdbar .btn{border-color:transparent;background:transparent}
@@ -157,7 +188,7 @@ table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:640px;ta
 .actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
 form.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end}
-label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink);min-width:0}
+.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink);min-width:0}
 label.f input,label.f select{border:1px solid var(--line2);border-bottom-color:var(--muted);background:var(--surface);border-radius:var(--r);padding:5px 10px;min-height:32px;
   font-weight:400;font-size:14px;color:var(--ink);width:100%}
 label.f input:focus,label.f select:focus{outline:none;border-bottom-color:var(--accent);box-shadow:inset 0 -1px 0 var(--accent)}
@@ -225,7 +256,7 @@ table.rt{border-collapse:collapse;width:100%;font-size:13px}
   .content{padding:12px 12px 96px}
   .who .uname{display:none}
   .brand h1{font-size:15px}
-  .logo{height:24px}
+  .logo{height:32px}
   .toast{left:12px;right:12px;bottom:calc(80px + env(safe-area-inset-bottom,0px))}
 }
 @media print{
@@ -275,6 +306,7 @@ table.rt{border-collapse:collapse;width:100%;font-size:13px}
           <button class="btn icon" id="prevw" data-i18n-aria="prevWeek"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
           <button class="btn icon" id="nextw" data-i18n-aria="nextWeek"><svg class="i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
           <div class="weeklabel num" id="weeklabel"></div>
+          <div class="vswitch" id="vswitch" role="group"><button type="button" data-view="day" data-i18n="vDay"></button><button type="button" data-view="week" data-i18n="vWeek"></button><button type="button" data-view="month" data-i18n="vMonth"></button></div>
         </div>
         <div id="calbody"></div>
         <div class="legend">
@@ -351,7 +383,11 @@ ro:{locale:"ro-RO",schoolDefault:"Inventar școală",appTitle:"Rezervări echipa
   csvBtn:"Descarcă pentru Excel (CSV)",printBtn:"Tipărește / PDF",repNone:"Nicio rezervare în perioada aleasă.",
   utilHint:wd=>"Utilizare = bucăți × ore rezervate, împărțit la bucăți × ore disponibile în cele "+wd+" zile lucrătoare (după stocul actual).",
   repNote:"Statisticile de sus numără doar rezervările active. Rezervările anulate înainte de această versiune a aplicației au fost șterse și nu mai pot fi afișate.",
-  colsFail:m=>"Nu am putut adăuga coloanele pentru anulări în lista Rezervari: "+m,cancelledBy:(at,who)=>"anulată "+at+" de "+who,cancelCount:n=>n===1?"1 anulată":n+" anulate",
+  colsFail:m=>"Nu am putut adăuga coloanele noi în listele SharePoint: "+m,
+  vDay:"Zi",vWeek:"Săptămână",vMonth:"Lună",minFree:(f,q)=>"min. "+f+" din "+q+" libere",monthHint:"Apasă pe o zi ca s-o deschizi și să rezervi.",
+  iconL:"Pictogramă",iconAuto:"Automat",
+  iconNames:{laptop:"Laptop",tablet:"Tabletă",phone:"Telefon",monitor:"Monitor / TV",projector:"Videoproiector",doccam:"Cameră de documente",camera:"Cameră foto/video",
+    speaker:"Boxe",headphones:"Căști",mic:"Microfon",vr:"Ochelari VR",robot:"Robotică",calculator:"Calculator de buzunar",printer:"Imprimantă",cable:"Cabluri / adaptoare",box:"Altele"},cancelledBy:(at,who)=>"anulată "+at+" de "+who,cancelCount:n=>n===1?"1 anulată":n+" anulate",
   st_cancel:"Anulată",stActive:"Activă",kCancelled:"Anulate",cxTitle:"Rezervări anulate",cxNone:"Nicio rezervare anulată în perioada aleasă.",colCxAt:"Anulată la",colCxBy:"Anulată de",
   nextTitle:"Următoarele rezervări",nextNone:"Nicio rezervare în următoarele 7 zile."},
 
@@ -401,7 +437,11 @@ en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking"
   csvBtn:"Download for Excel (CSV)",printBtn:"Print / PDF",repNone:"No bookings in the chosen period.",
   utilHint:wd=>"Utilisation = booked item-lessons divided by the item-lessons available on the "+wd+" weekdays in the period (based on current stock).",
   repNote:"The figures at the top count active bookings only. Bookings cancelled before this version of the app were deleted and can't be shown.",
-  colsFail:m=>"Couldn't add the cancellation columns to the Rezervari list: "+m,cancelledBy:(at,who)=>"cancelled "+at+" by "+who,cancelCount:n=>n+" cancelled",
+  colsFail:m=>"Couldn't add the new columns to the SharePoint lists: "+m,
+  vDay:"Day",vWeek:"Week",vMonth:"Month",minFree:(f,q)=>"min. "+f+" of "+q+" free",monthHint:"Click a day to open it and book.",
+  iconL:"Icon",iconAuto:"Automatic",
+  iconNames:{laptop:"Laptop",tablet:"Tablet",phone:"Phone",monitor:"Monitor / TV",projector:"Projector",doccam:"Document camera",camera:"Camera",
+    speaker:"Speakers",headphones:"Headphones",mic:"Microphone",vr:"VR headset",robot:"Robotics",calculator:"Calculator",printer:"Printer",cable:"Cables / adapters",box:"Other"},cancelledBy:(at,who)=>"cancelled "+at+" by "+who,cancelCount:n=>n+" cancelled",
   st_cancel:"Cancelled",stActive:"Active",kCancelled:"Cancelled",cxTitle:"Cancelled bookings",cxNone:"No bookings were cancelled in the chosen period.",colCxAt:"Cancelled on",colCxBy:"Cancelled by",
   nextTitle:"Upcoming bookings",nextNone:"No bookings in the next 7 days."},
 
@@ -451,7 +491,11 @@ de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Reservierung von S
   csvBtn:"Für Excel herunterladen (CSV)",printBtn:"Drucken / PDF",repNone:"Keine Reservierungen im gewählten Zeitraum.",
   utilHint:wd=>"Auslastung = reservierte Geräte × Stunden geteilt durch die verfügbaren Geräte × Stunden an den "+wd+" Wochentagen im Zeitraum (nach aktuellem Bestand).",
   repNote:"Die Kennzahlen oben zählen nur aktive Reservierungen. Reservierungen, die vor dieser App-Version storniert wurden, sind gelöscht und können nicht angezeigt werden.",
-  colsFail:m=>"Die Spalten für Stornierungen konnten nicht zur Liste Rezervari hinzugefügt werden: "+m,cancelledBy:(at,who)=>"storniert "+at+" von "+who,cancelCount:n=>n+" storniert",
+  colsFail:m=>"Die neuen Spalten konnten nicht zu den SharePoint-Listen hinzugefügt werden: "+m,
+  vDay:"Tag",vWeek:"Woche",vMonth:"Monat",minFree:(f,q)=>"mind. "+f+" von "+q+" frei",monthHint:"Klicken Sie auf einen Tag, um ihn zu öffnen und zu reservieren.",
+  iconL:"Symbol",iconAuto:"Automatisch",
+  iconNames:{laptop:"Laptop",tablet:"Tablet",phone:"Smartphone",monitor:"Monitor / TV",projector:"Beamer",doccam:"Dokumentenkamera",camera:"Kamera",
+    speaker:"Lautsprecher",headphones:"Kopfhörer",mic:"Mikrofon",vr:"VR-Brille",robot:"Robotik",calculator:"Taschenrechner",printer:"Drucker",cable:"Kabel / Adapter",box:"Sonstiges"},cancelledBy:(at,who)=>"storniert "+at+" von "+who,cancelCount:n=>n+" storniert",
   st_cancel:"Storniert",stActive:"Aktiv",kCancelled:"Storniert",cxTitle:"Stornierte Reservierungen",cxNone:"Im gewählten Zeitraum wurde nichts storniert.",colCxAt:"Storniert am",colCxBy:"Storniert von",
   nextTitle:"Nächste Reservierungen",nextNone:"Keine Reservierungen in den nächsten 7 Tagen."}
 };
@@ -478,7 +522,7 @@ const LIST_EQ="Echipamente", LIST_BK="Rezervari";
 const GRAPH="https://graph.microsoft.com/v1.0";
 
 const S={pca:null,account:null,admin:false,siteId:null,eqList:null,bkList:null,
-  eq:[],week:[],weekLoaded:false,mine:[],mineLoaded:false,sel:null,weekStart:monday(new Date()),tab:"cal",
+  eq:[],week:[],weekLoaded:false,mine:[],mineLoaded:false,sel:null,cursor:new Date(),view:(()=>{try{return localStorage.getItem("rez-view")||"week"}catch(e){return"week"}})(),tab:"cal",
   open:null,confirm:null,editing:null,busy:false,
   liveDate:null,live:[],liveLoaded:false,liveAt:null,
   rep:{from:null,to:null,eq:"",q:"",rows:null,range:null,loading:false}};
@@ -498,7 +542,7 @@ function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate
 function parse(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
 function monday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
-const F={wdLong:new Intl.DateTimeFormat(L.locale,{weekday:"long"}),dm:new Intl.DateTimeFormat(L.locale,{day:"numeric",month:"short"}),
+const F={wdLong:new Intl.DateTimeFormat(L.locale,{weekday:"long"}),my:new Intl.DateTimeFormat(L.locale,{month:"long",year:"numeric"}),dm:new Intl.DateTimeFormat(L.locale,{day:"numeric",month:"short"}),
   short:new Intl.DateTimeFormat(L.locale,{weekday:"short",day:"numeric",month:"short"}),long:new Intl.DateTimeFormat(L.locale,{weekday:"long",day:"numeric",month:"long"})};
 function fmtDay(s){return cap(F.short.format(parse(s)))}
 function longDay(s){return cap(F.long.format(parse(s)))}
@@ -507,6 +551,32 @@ function todayIso(){return iso(new Date())}
 function passed(date,p){const td=todayIso();if(date<td)return true;if(date>td)return false;
   const[hh,mm]=PERIODS[p-1].e.split(":").map(Number);const n=new Date();return n.getHours()*60+n.getMinutes()>=hh*60+mm;}
 function eqById(id){return S.eq.find(e=>e.id===id)}
+// ---------- iconițe echipamente ----------
+const ICONS={
+  laptop:'<rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/>',
+  tablet:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M11 18h2"/>',
+  phone:'<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
+  monitor:'<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16v4"/>',
+  projector:'<rect x="3" y="8" width="18" height="9" rx="2"/><circle cx="15" cy="12.5" r="2.5"/><path d="M6.5 11.5h3M6 17v2M18 17v2"/>',
+  doccam:'<path d="M5 20h14M9 20l2.5-9L16 7"/><rect x="14" y="3.5" width="6" height="4.5" rx="1"/>',
+  camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  speaker:'<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3"/><circle cx="12" cy="7.5" r="1"/>',
+  headphones:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/>',
+  vr:'<path d="M3 8h18v8h-5.5L12 13l-3.5 3H3z"/>',
+  robot:'<rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 4v4M9.5 12.5v1M14.5 12.5v1M9.5 16h5"/><circle cx="12" cy="3.5" r=".8"/>',
+  calculator:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01M8.5 15h.01M12 15h.01M15.5 15h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/>',
+  printer:'<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  cable:'<path d="M7 3v4M11 3v4M5 7h8v4a4 4 0 0 1-8 0zM9 15v2a4 4 0 0 0 4 4h7"/>',
+  box:'<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>'};
+const ICON_GUESS=[[/lap ?top|notebook|chromebook|macbook/i,"laptop"],[/i ?pad|tablet|tabletă|tableta/i,"tablet"],[/phone|telefon|handy|smartphone/i,"phone"],
+  [/beamer|proiector|projector/i,"projector"],[/dokumentenkam|document ?cam|documente|visuali[sz]er/i,"doccam"],[/kamera|camera|cameră|webcam/i,"camera"],
+  [/lautsprecher|speaker|boxe|boxă/i,"speaker"],[/kopfhörer|headphone|headset|căști|casti/i,"headphones"],[/mikro|micro|\bmic\b/i,"mic"],
+  [/\bvr\b|oculus|quest|brille/i,"vr"],[/robot|lego|bee-?bot|ozobot|calliope|micro:bit/i,"robot"],[/rechner|calculator|calculatoare/i,"calculator"],
+  [/drucker|printer|imprimant/i,"printer"],[/monitor|bildschirm|display|\btv\b|fernseher|ecran/i,"monitor"],[/kabel|cable|cablu|adapter|adaptor|hdmi|usb/i,"cable"]];
+function iconKey(e){if(e&&e.icon&&ICONS[e.icon])return e.icon;const n=(e&&e.name)||"";for(const[re,k]of ICON_GUESS)if(re.test(n))return k;return"box"}
+function iconEl(k,cls){const s=document.createElement("span");s.className="eqi"+(cls?" "+cls:"");s.setAttribute("aria-hidden","true");
+  s.innerHTML='<svg class="i" viewBox="0 0 24 24">'+(ICONS[k]||ICONS.box)+"</svg>";return s}
 let toastT;function toast(msg){const el=$("toast");el.textContent=msg;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,3500)}
 function notice(msg){const n=$("notice");n.textContent=msg||"";n.hidden=!msg}
 function booked(list,eq,date,p,filter){let s=0;for(const b of list)if(b.eq===eq&&b.date===date&&b.from<=p&&b.to>=p&&(!filter||filter(b)))s+=b.qty;return s}
@@ -541,28 +611,36 @@ async function findLists(){const ls=await gAll("/sites/"+S.siteId+"/lists?$selec
 async function createLists(){
   const base="/sites/"+S.siteId+"/lists";
   if(!S.eqList){const r=await g(base,{method:"POST",body:{displayName:LIST_EQ,list:{template:"genericList"},
-    columns:[{name:"Cantitate",number:{}},{name:"Nota",text:{}}]}},SETUP_SCOPES);S.eqList=r.id}
+    columns:[{name:"Cantitate",number:{}},{name:"Nota",text:{}},{name:"Icon",text:{}}]}},SETUP_SCOPES);S.eqList=r.id}
   if(!S.bkList){const r=await g(base,{method:"POST",body:{displayName:LIST_BK,list:{template:"genericList"},
     columns:[{name:"EchipamentId",text:{},indexed:true},{name:"Data",text:{},indexed:true},{name:"OraStart",number:{}},{name:"OraSfarsit",number:{}},
       {name:"Cantitate",number:{}},{name:"Clasa",text:{}},{name:"Nota",text:{}},{name:"Anulat",text:{}},{name:"AnulatDe",text:{}}]}},SETUP_SCOPES);S.bkList=r.id}}
-// Coloanele pentru anulări au apărut ulterior: le adaugă adminul în listele create mai demult.
-async function ensureCancelColumns(){
-  const cols=await gAll("/sites/"+S.siteId+"/lists/"+S.bkList+"/columns?$select=name");const have=new Set(cols.map(c=>c.name));
-  for(const name of ["Anulat","AnulatDe"])if(!have.has(name))
-    await g("/sites/"+S.siteId+"/lists/"+S.bkList+"/columns",{method:"POST",body:{name,text:{}}},SETUP_SCOPES);}
+// Coloane apărute ulterior (anulări, iconițe): le adaugă adminul în listele create mai demult.
+async function ensureColumns(){
+  for(const[list,names]of[[S.bkList,["Anulat","AnulatDe"]],[S.eqList,["Icon"]]]){
+    const base="/sites/"+S.siteId+"/lists/"+list+"/columns";
+    const have=new Set((await gAll(base+"?$select=name")).map(c=>c.name));
+    for(const name of names)if(!have.has(name))await g(base,{method:"POST",body:{name,text:{}}},SETUP_SCOPES);}}
 function items(list){return "/sites/"+S.siteId+"/lists/"+list+"/items"}
 function mapBk(it){const f=it.fields||{};const u=(it.createdBy||{}).user||{};
   return {id:it.id,eq:String(f.EchipamentId||""),date:f.Data,from:+f.OraStart,to:+f.OraSfarsit,qty:+f.Cantitate||0,cls:f.Clasa||"",note:f.Nota||"",
     byId:u.id||"",byName:u.displayName||"",byEmail:u.email||"",created:it.createdDateTime||"",
     cancelled:f.Anulat||"",cancelledBy:f.AnulatDe||""}}
-async function loadEq(){const r=await gAll(items(S.eqList)+"?$expand=fields($select=Title,Cantitate,Nota)&$top=500");
-  S.eq=r.map(it=>({id:it.id,name:(it.fields||{}).Title||"",qty:+(it.fields||{}).Cantitate||0,note:(it.fields||{}).Nota||""}))
+async function loadEq(){const q=s=>gAll(items(S.eqList)+"?$expand=fields($select=Title,Cantitate,Nota"+s+")&$top=500");
+  let r;try{r=await q(",Icon")}catch(e){if(e.status!==400)throw e;r=await q("")}// coloana Icon poate lipsi până deschide adminul aplicația
+  S.eq=r.map(it=>{const f=it.fields||{};return{id:it.id,name:f.Title||"",qty:+f.Cantitate||0,note:f.Nota||"",icon:f.Icon||""}})
     .filter(e=>e.name&&e.qty>0).sort((a,b)=>a.name.localeCompare(b.name,L.locale))}
 // withCancelled=false: doar rezervările active (pentru disponibilitate); true: și cele anulate (live, rapoarte).
 async function loadRange(a,b,withCancelled){const q="?$expand=fields($select=Title,EchipamentId,Data,OraStart,OraSfarsit,Cantitate,Clasa,Nota,Anulat,AnulatDe)&$select=id,createdBy,createdDateTime"+
   "&$filter="+encodeURIComponent("fields/Data ge '"+a+"' and fields/Data le '"+b+"'")+"&$top=999";
   return (await gAll(items(S.bkList)+q)).map(mapBk).filter(x=>x.date&&x.from>=1&&(withCancelled||!x.cancelled))}
-async function loadWeek(){const key=iso(S.weekStart);const rows=await loadRange(key,iso(addDays(S.weekStart,4)));if(iso(S.weekStart)!==key)return;S.week=rows;S.weekLoaded=true}
+// Intervalul afișat în calendar, după vedere: zi, săptămână (L–V) sau lună (săptămânile întregi care o acoperă).
+function viewRange(){const c=S.cursor;
+  if(S.view==="day")return[c,c];
+  if(S.view==="month"){const a=monday(new Date(c.getFullYear(),c.getMonth(),1));const last=new Date(c.getFullYear(),c.getMonth()+1,0);return[a,addDays(monday(last),4)]}
+  const a=monday(c);return[a,addDays(a,4)]}
+async function loadWeek(){const[a,b]=viewRange().map(iso);const key=S.view+a;const rows=await loadRange(a,b);
+  if(S.view+iso(viewRange()[0])!==key)return;S.week=rows;S.weekLoaded=true}
 async function loadMine(){const td=todayIso();const rows=await loadRange(td,iso(addDays(new Date(),370)));S.mine=rows.filter(isMine);S.mineLoaded=true}
 
 // ---------- boot ----------
@@ -593,7 +671,7 @@ async function boot(){
       screen(emptyBox(t("firstRunT"),t("firstRunP"),btn))}
     else screen(emptyBox(t("notConfT"),t("notReadyP")));
     return}
-  if(S.admin){try{await ensureCancelColumns()}catch(e){notice(t("colsFail",e.message))}}
+  if(S.admin){try{await ensureColumns()}catch(e){notice(t("colsFail",e.message))}}
   start();
 }
 function showLogin(){
@@ -627,22 +705,34 @@ function renderTabs(){for(const b of document.querySelectorAll("#tabs button"))b
   if(S.tab==="inv")renderInv(); if(S.tab==="cal")renderCal();
   if(S.tab==="live")goLive(S.liveDate||todayIso());
   if(S.tab==="rep")renderRep();}
-async function goWeek(d){S.weekStart=d;S.weekLoaded=false;renderCal();try{await loadWeek()}catch(e){notice(t("weekFail"))}renderCal()}
-$("prevw").onclick=()=>goWeek(addDays(S.weekStart,-7));
-$("nextw").onclick=()=>goWeek(addDays(S.weekStart,7));
-$("thisw").onclick=()=>goWeek(monday(new Date()));
+async function goWeek(d,view){if(view){S.view=view;try{localStorage.setItem("rez-view",view)}catch(e){}}
+  S.cursor=d;S.weekLoaded=false;renderCal();try{await loadWeek()}catch(e){notice(t("weekFail"))}renderCal()}
+function stepDay(d,n){let x=addDays(d,n);while(x.getDay()===0||x.getDay()===6)x=addDays(x,n);return x}// sare peste weekend
+function step(n){const c=S.cursor;
+  if(S.view==="day")return stepDay(c,n);
+  if(S.view==="month")return new Date(c.getFullYear(),c.getMonth()+n,1);
+  return addDays(c,7*n)}
+$("prevw").onclick=()=>goWeek(step(-1));
+$("nextw").onclick=()=>goWeek(step(1));
+$("thisw").onclick=()=>goWeek(new Date());
+$("vswitch").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(b&&b.dataset.view!==S.view)goWeek(S.cursor,b.dataset.view)});
 
 // ---------- calendar ----------
 function renderChips(){const box=$("eqchips");box.replaceChildren();
-  for(const e of S.eq)box.append(h("button",{class:"chip","aria-pressed":String(S.sel===e.id),on:{click:()=>{S.sel=e.id;renderChips();renderCal()}}},e.name,h("small",{class:"num"},"×"+e.qty)));}
+  for(const e of S.eq)box.append(h("button",{class:"chip","aria-pressed":String(S.sel===e.id),on:{click:()=>{S.sel=e.id;renderChips();renderCal()}}},iconEl(iconKey(e)),h("span",{class:"nm"},e.name),h("small",{class:"num"},"×"+e.qty)));}
 function renderCal(){
-  const ws=S.weekStart,we=addDays(ws,4);
-  $("weeklabel").textContent=F.dm.format(ws)+" – "+F.dm.format(we)+" "+we.getFullYear();
+  const[ws,we]=viewRange();
+  for(const b of document.querySelectorAll("#vswitch button"))b.setAttribute("aria-pressed",String(b.dataset.view===S.view));
+  $("weeklabel").textContent=S.view==="day"?longDay(iso(S.cursor))+" "+S.cursor.getFullYear()
+    :S.view==="month"?cap(F.my.format(S.cursor)):F.dm.format(ws)+" – "+F.dm.format(we)+" "+we.getFullYear();
   const body=$("calbody");
   if(!S.eq.length){body.replaceChildren(emptyBox(t("noEqT"),S.admin?t("noEqAdmin"):t("noEqUser"),
     S.admin?h("button",{class:"btn primary",on:{click:()=>{S.tab="inv";renderTabs()}}},t("openInv")):null));return}
   if(!S.sel||!eqById(S.sel)){S.sel=S.eq[0].id;renderChips()}
-  const eq=eqById(S.sel);const dates=[0,1,2,3,4].map(i=>iso(addDays(ws,i)));const td=todayIso();
+  const eq=eqById(S.sel);const td=todayIso();
+  if(S.view==="month"){renderMonth(eq,ws,we);return}
+  const day=S.view==="day";
+  const dates=day?[iso(S.cursor)]:[0,1,2,3,4].map(i=>iso(addDays(ws,i)));
   const thead=h("thead",null,h("tr",null,h("th",null,t("hourCol")),dates.map(d=>h("th",{class:d===td?"today":""},cap(F.wdLong.format(parse(d))),h("span",{class:"num"},F.dm.format(parse(d)))))));
   const tbody=h("tbody");
   for(const p of PERIODS){
@@ -654,13 +744,40 @@ function renderCal(){
       tr.append(h("td",null,h("button",{class:"cell "+cls+(mine?" has-mine":""),disabled:!S.weekLoaded||(past&&!used),on:{click:()=>openSlot(eq.id,d,p.n)},"aria-label":t("cellAria",eq.name,fmtDay(d),p.n,free,eq.qty)},
         h("span",{class:"free num"},free===0?t("full"):free+" ",free===0?null:h("small",null,t("freeOf",eq.qty))),
         h("span",{class:"meter"},h("i",{style:"width:"+pct+"%"})),
+        // În vederea pe zi e loc pentru detalii: cine a rezervat, câte bucăți, clasa.
+        day?S.week.filter(b=>b.eq===eq.id&&b.date===d&&b.from<=p.n&&b.to>=p.n).map(b=>h("span",{class:"bk"+(isMine(b)?" me":"")},
+          h("b",null,isMine(b)?t("you"):(b.byName||t("aTeacher")))," · "+t("pcs",b.qty),h("small",null,(b.cls?t("cls",b.cls):"")+(b.note?" · "+b.note:"")))):
         mine?h("span",{class:"mine"},t("yours")):null)));
     }
     tbody.append(tr);
   }
-  const box=h("div",{class:"gridbox"},h("table",{class:"tt"},thead,tbody));
+  const tbl=h("table",{class:"tt"},thead,tbody);if(day)tbl.style.minWidth="0";
+  const box=h("div",{class:"gridbox"},tbl);
   if(!S.weekLoaded)box.style.opacity=".5";
   body.replaceChildren(box);
+}
+function renderMonth(eq,ws,we){
+  const td=todayIso();const m=S.cursor.getMonth();
+  const thead=h("thead",null,h("tr",null,[0,1,2,3,4].map(i=>h("th",null,cap(F.wdLong.format(addDays(ws,i)))))));
+  const tbody=h("tbody");
+  for(let w=ws;w<=we;w=addDays(w,7)){
+    const tr=h("tr");
+    for(let i=0;i<5;i++){const dt=addDays(w,i),d=iso(dt);
+      const list=S.week.filter(b=>b.eq===eq.id&&b.date===d);
+      let maxUsed=0;for(const p of PERIODS)maxUsed=Math.max(maxUsed,booked(S.week,eq.id,d,p.n));
+      const minFree=Math.max(0,eq.qty-maxUsed);const r=maxUsed/eq.qty;
+      const cls=!list.length?"":minFree===0?"full":(minFree/eq.qty<=.25?"warn":"ok");
+      const mine=list.some(isMine);
+      tr.append(h("td",null,h("button",{class:"daycell "+cls+(dt.getMonth()!==m?" out":"")+(d===td?" today":"")+(mine?" has-mine":""),
+        "aria-label":fmtDay(d)+": "+t("dayCount",list.length),on:{click:()=>goWeek(dt,"day")}},
+        h("span",{class:"dn num"},dt.getDate()),
+        list.length?h("span",{class:"sum"},h("b",null,t("dayCount",list.length)),h("br"),t("minFree",minFree,eq.qty)):null,
+        list.length?h("span",{class:"meter"},h("i",{style:"width:"+Math.min(100,Math.round(r*100))+"%"})):null,
+        mine?h("span",{class:"mine",style:"font-size:11px;font-weight:600;color:var(--accent)"},t("yours")):null)))}
+    tbody.append(tr)}
+  const box=h("div",{class:"gridbox"},h("table",{class:"tt mo"},thead,tbody));
+  if(!S.weekLoaded)box.style.opacity=".5";
+  $("calbody").replaceChildren(box,h("p",{class:"hint",style:"margin:8px 0 0"},t("monthHint")));
 }
 
 // ---------- slot sheet ----------
@@ -673,7 +790,7 @@ function renderSheet(focus){
   const here=S.week.filter(b=>b.eq===eqId&&b.date===date&&b.from<=p&&b.to>=p).sort((a,b)=>a.from-b.from);
   const free=Math.max(0,eq.qty-here.reduce((s,b)=>s+b.qty,0));const past=passed(date,p);const per=PERIODS[p-1];
   const kids=[
-    h("header",null,h("div",null,h("div",{class:"eyebrow"},eq.name),h("h2",null,longDay(date)+" · "+t("period",p)),h("div",{class:"muted num"},per.s+"–"+per.e)),
+    h("header",null,h("div",null,h("div",{class:"eyebrow",style:"display:flex;align-items:center;gap:6px"},iconEl(iconKey(eq)),eq.name),h("h2",null,longDay(date)+" · "+t("period",p)),h("div",{class:"muted num"},per.s+"–"+per.e)),
       h("button",{class:"x","aria-label":t("close"),on:{click:closeSheet}},"×")),
     h("div",null,h("div",{class:"big num",style:"color:var(--"+(free===0?"bad":"ok")+")"},free),h("div",{class:"hint"},t("freeLabel",eq.qty)))];
   if(here.length){const list=h("div",{class:"list"});
@@ -760,7 +877,7 @@ function renderMine(){
 function renderInv(){
   const v=$("view-inv");const parts=[];const list=h("div",{class:"list"});
   for(const e of S.eq){
-    const row=h("div",{class:"row"},h("div",{class:"main"},h("b",null,e.name),e.note?h("span",{class:"hint"},e.note):null),h("span",{class:"pill acc num"},t("pcs",e.qty)));
+    const row=h("div",{class:"row"},iconEl(iconKey(e),"lg"),h("div",{class:"main"},h("b",null,e.name),e.note?h("span",{class:"hint"},e.note):null),h("span",{class:"pill acc num"},t("pcs",e.qty)));
     if(S.admin){
       if(S.confirm==="eq:"+e.id)row.append(h("span",{class:"actions"},h("span",{class:"hint"},t("delQ")),
         h("button",{class:"btn sm danger solid",on:{click:async()=>{try{await g(items(S.eqList)+"/"+e.id,{method:"DELETE"});toast(t("deletedT",e.name));await loadEq()}catch(x){toast(t("delFail"))}S.confirm=null;renderChips();renderInv()}}},t("yesDel")),
@@ -774,7 +891,7 @@ function renderInv(){
     S.eq.length?list:h("p",{class:"muted",style:"margin:0"},S.admin?t("eqEmptyAdmin"):t("eqEmptyUser")),
     !S.admin?h("p",{class:"hint",style:"margin:0"},t("adminOnly")):null));
   if(S.admin)parts.push(h("div",{class:"panel"},h("h2",null,t("addEq")),
-    h("div",{class:"chips"},h("span",{class:"hint",style:"align-self:center"},t("quick")),L.quickNames.map(n=>h("button",{class:"chip",type:"button",on:{click:()=>{$("eq-name-new").value=n;$("eq-qty-new").focus()}}},n))),
+    h("div",{class:"chips"},h("span",{class:"hint",style:"align-self:center"},t("quick")),L.quickNames.map(n=>h("button",{class:"chip",type:"button",on:{click:()=>{const el=$("eq-name-new");el.value=n;el.dispatchEvent(new Event("input"));$("eq-qty-new").focus()}}},n))),
     eqForm(null)));
   v.replaceChildren(...parts);
 }
@@ -784,15 +901,26 @@ function eqForm(e){
   const qty=h("input",{id:"eq-qty-"+sfx,type:"number",min:1,max:999,required:true,value:e?e.qty:"",placeholder:t("qtyPh")});
   const note=h("input",{id:"eq-note-"+sfx,type:"text",maxLength:120,value:e?e.note:"",placeholder:t("noteEqPh")});
   const err=h("div",{class:"err",hidden:true});
+  // Alegerea iconiței: „Automat” o ghicește din nume.
+  let icon=e?e.icon||"":"";
+  const picker=h("div",{class:"iconpick",role:"radiogroup","aria-label":t("iconL")});
+  function drawPicker(){picker.replaceChildren(
+    h("button",{type:"button",class:"ipk auto",role:"radio","aria-checked":String(!icon),title:t("iconAuto"),on:{click:()=>{icon="";drawPicker()}}},
+      iconEl(iconKey({name:name.value})),h("span",null,t("iconAuto"))),
+    ...Object.keys(ICONS).map(k=>h("button",{type:"button",class:"ipk",role:"radio","aria-checked":String(icon===k),title:L.iconNames[k],"aria-label":L.iconNames[k],
+      on:{click:()=>{icon=k;drawPicker()}}},iconEl(k))))}
+  name.addEventListener("input",()=>{if(!icon)drawPicker()});
+  drawPicker();
   return h("form",{class:"grid",style:e?"padding:10px 0 14px":"",on:{submit:async ev=>{ev.preventDefault();err.hidden=true;
     const n=Math.floor(+qty.value),nm=name.value.trim();
     if(!nm||!(n>=1)){err.textContent=t("fillErr");err.hidden=false;return}
-    try{const fields={Title:nm,Cantitate:n,Nota:note.value.trim()};
+    try{const fields={Title:nm,Cantitate:n,Nota:note.value.trim(),Icon:icon};
       if(e){await g(items(S.eqList)+"/"+e.id+"/fields",{method:"PATCH",body:fields});S.editing=null;toast(t("saved"))}
       else{const r=await g(items(S.eqList),{method:"POST",body:{fields}});S.sel=r.id;toast(t("added",nm))}
       await loadEq();renderChips();renderInv();}
     catch(x){err.textContent=x.status===403?t("noInvRight"):t("notSaved",x.message);err.hidden=false}}}},
     h("label",{class:"f"},t("nameL"),name),h("label",{class:"f"},t("pcsL"),qty),h("label",{class:"f full-span"},t("noteEqL"),note),
+    h("div",{class:"f full-span"},h("span",null,t("iconL")),picker),
     h("div",{class:"full-span actions"},h("button",{class:"btn primary",type:"submit"},e?t("save"):t("addBtn")),
       e?h("button",{class:"btn",type:"button",on:{click:()=>{S.editing=null;renderInv()}}},t("cancelEdit")):null,err));
 }
