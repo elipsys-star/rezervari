@@ -1,21 +1,24 @@
 // Configurarea aplicației. Completează valorile de mai jos după pașii din GHID-INSTALARE.md.
 window.APP_CONFIG = {
   // Entra ID → App registrations → aplicația ta → Overview
-  tenantId: "PUNE-AICI-DIRECTORY-TENANT-ID",
-  clientId: "PUNE-AICI-APPLICATION-CLIENT-ID",
+  tenantId: "8112f60e-b0f0-4905-a8fe-ffec36dc7e07",
+  clientId: "1c45b690-3f57-42a9-8a01-7d04d2266533",
 
   // Adresa site-ului SharePoint unde se păstrează listele
-  siteUrl: "https://NUMESCOALA.sharepoint.com/sites/RezervariEchipamente",
+  siteUrl: "https://dsbukarest.sharepoint.com/sites/DSBU-Gerteausleihe",
 
   // Conturile care administrează inventarul (pot adăuga/șterge echipamente și anula orice rezervare)
-  admins: ["admin@scoala.ro"],
+  admins: ["c.draghiciu@dsbu.ro"],
 
   // Numele școlii, afișat în antet
-  schoolName: "Școala noastră",
+  schoolName: "Deutsche Schule Bukarest",
+
+  // Logo afișat în antet în locul numelui școlii (fișier urcat lângă index.html). Lasă "" ca să afișezi doar numele.
+  logo: "logo.png",
 
   // Limba implicită: "auto" (după limba browserului), "ro", "en" sau "de".
   // Fiecare utilizator o poate schimba din colțul paginii; alegerea lui se păstrează.
-  language: "auto",
+  language: "de",
 
   // Programul orelor (poți modifica orele sau adăuga/șterge rânduri)
   periods: [

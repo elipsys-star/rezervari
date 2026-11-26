@@ -43,6 +43,8 @@ button{cursor:pointer}
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
 .brand{display:flex;flex-direction:column;gap:2px}
 .eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+.logo{display:block;width:200px;max-width:100%;height:auto;aspect-ratio:700/231;object-fit:contain;margin-bottom:8px}
+@media (prefers-color-scheme: dark){.logo{background:#fff;padding:6px 10px;border-radius:8px;box-sizing:content-box}}
 .eyebrow b{display:inline-block;width:10px;height:10px;background:var(--chalk);border-radius:2px;margin-right:6px;vertical-align:-1px}
 .who{font-size:.85rem;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .linkbtn{border:0;background:none;color:var(--accent);font-weight:700;padding:0;text-decoration:underline}
@@ -259,7 +261,7 @@ en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking"
   save:"Save",addBtn:"Add to inventory",cancelEdit:"Cancel",saved:"Saved",added:e=>e+" was added",fillErr:"Enter a name and a quantity of at least 1.",
   noInvRight:"You aren't allowed to change the inventory.",notSaved:m=>"Not saved: "+m,busy:"The Microsoft service is busy. Try again."},
 
-de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Geräteausleihe",
+de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Reservierung von Schulgeräten",
   tabCal:"Belegungsplan",tabMine:"Meine Reservierungen",tabInv:"Inventar",prevWeek:"Vorige Woche",nextWeek:"Nächste Woche",today:"Heute",
   legOk:"Verfügbar",legWarn:"Unter 25 % frei",legFull:"Ausgebucht",legHint:"Klicken Sie auf eine Stunde, um zu reservieren oder zu sehen, wer reserviert hat.",
   hourCol:"Stunde",period:n=>n+". Stunde",periods:(a,b)=>a+".–"+b+". Stunde",
@@ -396,6 +398,8 @@ async function loadMine(){const td=todayIso();const rows=await loadRange(td,iso(
 // ---------- boot ----------
 async function boot(){
   if(CFG.schoolName)$("school").textContent=CFG.schoolName;
+  if(CFG.logo){const eb=$("school").parentNode,img=h("img",{class:"logo",src:CFG.logo,alt:CFG.schoolName||""});
+    img.onload=()=>{eb.replaceWith(img)};}
   if(!configured()){screen(emptyBox(t("notConfT"),t("notConfP")));return}
   if(!window.msal){screen(emptyBox(t("msalT"),t("msalP")));return}
   S.pca=new msal.PublicClientApplication({auth:{clientId:CFG.clientId,authority:"https://login.microsoftonline.com/"+CFG.tenantId,redirectUri:redirectUri()},
