@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rezervări echipamente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --sunk:#e9edf3; --line:#d5dbe4;
+  --ink:#18202d; --muted:#5b6678;
+  --accent:#2446b8; --accent-ink:#ffffff; --accent-soft:#e3e9fb;
+  --chalk:#f2c230;
+  --ok:#1d7a4c; --warn:#9a6400; --warn-soft:#fbefd2; --bad:#b3261e; --bad-soft:#f9e0de;
+  --shadow:0 10px 30px rgba(20,30,60,.18);
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11151c; --surface:#1a2029; --sunk:#232b36; --line:#323c4a;
+  --ink:#e8ecf2; --muted:#9aa5b6;
+  --accent:#7d9bff; --accent-ink:#0c1226; --accent-soft:#242f52;
+  --ok:#5fd19a; --warn:#f0b549; --warn-soft:#3a2d12; --bad:#ff8a80; --bad-soft:#3d1c1a;
+  --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(48px + env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(1.5rem,3.6vw,2.1rem);font-weight:800}
+h2{font-size:1.15rem;font-weight:700}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+.eyebrow b{display:inline-block;width:10px;height:10px;background:var(--chalk);border-radius:2px;margin-right:6px;vertical-align:-1px}
+.who{font-size:.85rem;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.linkbtn{border:0;background:none;color:var(--accent);font-weight:700;padding:0;text-decoration:underline}
+.langsel{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 8px;font-weight:700;font-size:.82rem;color:var(--ink)}
+
+.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:10px;width:fit-content;max-width:100%;overflow-x:auto}
+.tabs button{border:0;background:transparent;padding:8px 14px;border-radius:7px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;font-weight:700;display:flex;gap:8px;align-items:center}
+.chip small{font-weight:400;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.8}
+.weeknav{display:flex;align-items:center;gap:6px}
+.btn{border:1.5px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:8px;font-weight:700;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad);border-color:var(--bad-soft)}
+.btn.danger.solid{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:4px 10px;font-size:.85rem}
+.btn.big{padding:12px 20px;font-size:1.05rem}
+.weeklabel{font-weight:700;min-width:13ch;text-align:center}
+
+.gridbox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;transition:opacity .2s}
+table.tt{border-collapse:collapse;width:100%;min-width:640px}
+.tt th,.tt td{border-bottom:1px solid var(--line);padding:0}
+.tt thead th{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px 8px;text-align:left;font-weight:700;background:var(--sunk)}
+.tt thead th span{display:block;font-size:1rem;letter-spacing:0;text-transform:none;color:var(--ink);font-family:var(--f-display)}
+.tt thead th.today,.tt thead th.today span{color:var(--accent)}
+.tt tbody th{text-align:left;padding:8px 10px;font-weight:700;white-space:nowrap;width:1%;border-right:1px solid var(--line)}
+.tt tbody th small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.tt tr:last-child th,.tt tr:last-child td{border-bottom:0}
+.cell{display:flex;flex-direction:column;gap:5px;width:100%;min-height:58px;border:0;background:transparent;text-align:left;padding:8px 10px;border-left:1px solid var(--line)}
+.cell:hover:not(:disabled){background:var(--accent-soft)}
+.cell:disabled{cursor:default;opacity:.45}
+.cell .free{font-weight:700;font-size:.92rem}
+.cell .free small{font-weight:400;color:var(--muted)}
+.meter{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:3px}
+.cell.ok .meter i{background:var(--ok)} .cell.warn .meter i{background:var(--warn)} .cell.full .meter i{background:var(--bad)}
+.cell.full .free{color:var(--bad)} .cell.warn .free{color:var(--warn)}
+.cell .mine{font-size:.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:6px;border-radius:3px;display:inline-block}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.empty{text-align:center;padding:36px 18px;align-items:center}
+.empty p{max-width:56ch;margin:0}
+.list{display:flex;flex-direction:column}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .main{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.daytitle{font-family:var(--f-display);font-weight:700;padding-top:10px;color:var(--muted);font-size:.9rem;text-transform:uppercase;letter-spacing:.06em}
+.pill{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.pill.acc{background:var(--accent-soft);color:var(--accent)}
+.actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+form.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:.82rem;font-weight:700;color:var(--muted);min-width:0}
+label.f input,label.f select{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-weight:400;font-size:.95rem;color:var(--ink);width:100%}
+label.f input:focus,label.f select:focus{border-color:var(--accent);outline:none}
+.full-span{grid-column:1/-1}
+.hint{font-size:.82rem;color:var(--muted)}
+.err{color:var(--bad);font-size:.88rem;font-weight:700}
+.notice{padding:12px 14px;border-radius:10px;background:var(--warn-soft);color:var(--warn);font-weight:700;font-size:.9rem}
+
+.login{min-height:60vh;display:flex;align-items:center;justify-content:center}
+.login .panel{max-width:460px;text-align:center;align-items:center;padding:32px 24px}
+.ms{display:inline-flex;gap:10px;align-items:center}
+.ms i{display:grid;grid-template-columns:8px 8px;gap:2px}
+.ms i b{width:8px;height:8px;display:block}
+
+.overlay{position:fixed;inset:0;background:rgba(10,15,25,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;max-height:88vh;overflow-y:auto;border-radius:16px 16px 0 0;box-shadow:var(--shadow);
+  padding:20px max(18px, env(safe-area-inset-left,0px)) calc(22px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
+@media (min-width:700px){.overlay{align-items:center}.sheet{border-radius:16px}}
+.sheet header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.x{border:0;background:var(--sunk);width:34px;height:34px;border-radius:50%;font-size:1.2rem;line-height:1;flex:none}
+.big{font-family:var(--f-display);font-size:2rem;font-weight:800;line-height:1}
+.who-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.who-row:last-child{border-bottom:0}
+.who-row .main{flex:1;min-width:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-weight:700;z-index:30;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow"><b></b><span id="school" data-i18n="schoolDefault"></span></div>
+      <h1 data-i18n="appTitle"></h1>
+    </div>
+    <div class="who">
+      <span id="who" class="who"></span>
+      <select id="lang" class="langsel" aria-label="Language / Limba / Sprache">
+        <option value="ro">RO</option><option value="en">EN</option><option value="de">DE</option>
+      </select>
+    </div>
+  </header>
+
+  <div id="notice" class="notice" hidden></div>
+  <div id="screen"></div>
+
+  <div id="app" hidden style="display:flex;flex-direction:column;gap:18px">
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" aria-selected="true" data-tab="cal" data-i18n="tabCal"></button>
+      <button role="tab" aria-selected="false" data-tab="mine" data-i18n="tabMine"></button>
+      <button role="tab" aria-selected="false" data-tab="inv" data-i18n="tabInv"></button>
+    </nav>
+    <section id="view-cal" style="display:flex;flex-direction:column;gap:14px">
+      <div class="bar">
+        <div class="chips" id="eqchips"></div>
+        <div class="weeknav">
+          <button class="btn" id="prevw" data-i18n-aria="prevWeek">‹</button>
+          <div class="weeklabel num" id="weeklabel"></div>
+          <button class="btn" id="nextw" data-i18n-aria="nextWeek">›</button>
+          <button class="btn" id="thisw" data-i18n="today"></button>
+        </div>
+      </div>
+      <div id="calbody"></div>
+      <div class="legend">
+        <span><i style="background:var(--ok)"></i><span data-i18n="legOk"></span></span>
+        <span><i style="background:var(--warn)"></i><span data-i18n="legWarn"></span></span>
+        <span><i style="background:var(--bad)"></i><span data-i18n="legFull"></span></span>
+        <span data-i18n="legHint"></span>
+      </div>
+    </section>
+    <section id="view-mine" hidden></section>
+    <section id="view-inv" hidden></section>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script src="msal-browser.min.js"></script>
+<script>
+(function(){
+"use strict";
+const CFG=window.APP_CONFIG||{};
+
+// ---------- translations ----------
+const I18N={
+ro:{locale:"ro-RO",schoolDefault:"Inventar școală",appTitle:"Rezervări echipamente",
+  tabCal:"Orar rezervări",tabMine:"Rezervările mele",tabInv:"Inventar",prevWeek:"Săptămâna anterioară",nextWeek:"Săptămâna următoare",today:"Azi",
+  legOk:"Disponibil",legWarn:"Sub 25% liber",legFull:"Ocupat complet",legHint:"Apasă pe o oră pentru a rezerva sau a vedea cine a rezervat.",
+  hourCol:"Ora",period:n=>"Ora "+n,periods:(a,b)=>"Orele "+a+"–"+b,
+  freeOf:q=>"din "+q+" libere",full:"Ocupat",yours:"Rezervarea ta",cellAria:(e,d,p,f,q)=>e+", "+d+", ora "+p+": "+f+" din "+q+" libere",
+  notConfT:"Aplicația nu este configurată încă",notConfP:"Completează fișierul config.js cu datele aplicației din Entra ID și adresa site-ului SharePoint, după pașii din ghidul de instalare.",
+  msalT:"Lipsește fișierul msal-browser.min.js",msalP:"Încarcă fișierul msal-browser.min.js în același folder cu index.html.",
+  loading:"Se încarcă…",siteErrT:"Nu pot deschide site-ul SharePoint",siteNoAccess:"Contul tău nu are acces la site-ul de rezervări. Cere administratorului să te adauge ca membru al site-ului.",
+  errorT:"A apărut o eroare",errorP:m=>"Eroare: "+m,
+  firstRunT:"Prima pornire",firstRunP:"Aplicația are nevoie de două liste în site-ul SharePoint: „Echipamente” și „Rezervari”. Le creez acum, cu toate coloanele necesare.",
+  createLists:"Creează listele",creatingLists:"Se creează listele…",listsCreated:"Listele au fost create",listsFail:m=>"Nu am putut crea listele: "+m,
+  notReadyP:"Administratorul trebuie să deschidă aplicația o dată pentru a crea listele. Revino puțin mai târziu.",
+  welcome:"Bun venit",loginP:"Folosește contul Microsoft 365 al școlii ca să vezi echipamentele libere și să faci rezervări.",loginBtn:"Intră cu contul școlii",
+  signOut:"Ieși din cont",adminSfx:" · administrator",authFail:m=>"Autentificarea nu a reușit: "+m,
+  loadFail:m=>"Datele nu s-au putut încărca: "+m,refreshFail:"Nu am putut actualiza datele. Verifică conexiunea.",mineFail:"Rezervările tale nu s-au putut încărca.",weekFail:"Rezervările nu s-au putut încărca.",
+  noEqT:"Încă nu există echipamente în inventar",noEqAdmin:"Adaugă laptopurile, iPad-urile și restul echipamentelor din tabul Inventar.",noEqUser:"Administratorul încă nu a adăugat echipamentele. Revino puțin mai târziu.",openInv:"Deschide inventarul",
+  close:"Închide",freeLabel:q=>"libere din "+q,bookedAlready:"Rezervat deja",you:"Tu",aTeacher:"Un profesor",pcs:n=>n+" buc",cls:c=>" · clasa "+c,
+  pastHour:"Această oră a trecut.",noneFree:"Nu mai sunt unități libere la această oră. Încearcă altă oră sau alt echipament.",
+  newBooking:"Rezervare nouă",qtyL:"Cantitate",intervalL:"Interval",classL:"Clasa",noteL:"Notă (opțional)",classPh:"ex. 7B",notePh:"ex. test online, sala 12",
+  onlyP:p=>"Doar ora "+p,untilP:q=>"Până la ora "+q+" (inclusiv)",maxHint:m=>"Maxim "+m+" disponibile pe tot intervalul ales.",
+  bookBtn:(n,e)=>"Rezervă "+(n>0?n+" × ":"")+e,checking:"Se verifică…",saving:"Se salvează…",minOne:"Alege cel puțin o bucată.",
+  onlyX:m=>"Sunt doar "+m+" libere pe intervalul ales. Micșorează cantitatea sau intervalul.",raceLost:"Între timp altcineva a rezervat aceleași bucăți. Verifică din nou disponibilitatea.",
+  noWrite:"Nu ai drept de scriere în lista de rezervări. Cere administratorului să te adauge ca membru al site-ului.",saveFail:m=>"Rezervarea nu s-a salvat: "+m,
+  bookedToast:(n,e,d)=>"Rezervat: "+n+" × "+e+", "+d,cancel:"Anulează",yesCancel:"Da, anulează",no:"Nu",cancelled:"Rezervarea a fost anulată",cancelOwn:"Poți anula doar rezervările tale.",cancelFail:"Anularea nu a reușit. Încearcă din nou.",
+  mineLoading:"Se încarcă rezervările tale…",noMineT:"Nu ai rezervări viitoare",noMineP:"Alege un echipament din Orar rezervări și apasă pe o oră liberă.",bookNow:"Rezervă acum",
+  mineTitle:"Rezervările mele",mineCount:n=>n===1?"1 rezervare viitoare":n+" rezervări viitoare",todaySfx:" · azi",ended:"Încheiată",eqDeleted:"Echipament șters",
+  delQ:"Ștergi definitiv?",yesDel:"Da, șterge",deletedT:e=>e+" a fost șters din inventar",delFail:"Ștergerea nu a reușit.",edit:"Editează",del:"Șterge",
+  eqTitle:"Echipamente",eqEmptyAdmin:"Inventarul e gol. Adaugă primul echipament mai jos.",eqEmptyUser:"Administratorul încă nu a adăugat echipamente.",adminOnly:"Doar administratorii pot modifica inventarul.",
+  addEq:"Adaugă echipament",quick:"Rapid:",quickNames:["Laptopuri","iPad-uri","Videoproiector mobil","Cameră de documente","Boxe portabile"],
+  nameL:"Denumire",pcsL:"Bucăți",noteEqL:"Notă (unde se află, accesorii)",namePh:"ex. Laptopuri",qtyPh:"ex. 25",noteEqPh:"ex. Dulapul din sala 14, cu încărcătoare",
+  save:"Salvează",addBtn:"Adaugă în inventar",cancelEdit:"Renunță",saved:"Salvat",added:e=>e+" a fost adăugat",fillErr:"Completează numele și o cantitate de cel puțin 1.",
+  noInvRight:"Nu ai drept să modifici inventarul.",notSaved:m=>"Nu s-a salvat: "+m,busy:"Serviciul Microsoft e ocupat. Încearcă din nou."},
+
+en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking",
+  tabCal:"Booking schedule",tabMine:"My bookings",tabInv:"Inventory",prevWeek:"Previous week",nextWeek:"Next week",today:"Today",
+  legOk:"Available",legWarn:"Under 25% free",legFull:"Fully booked",legHint:"Click a lesson to book or to see who has booked it.",
+  hourCol:"Lesson",period:n=>"Lesson "+n,periods:(a,b)=>"Lessons "+a+"–"+b,
+  freeOf:q=>"of "+q+" free",full:"Full",yours:"Your booking",cellAria:(e,d,p,f,q)=>e+", "+d+", lesson "+p+": "+f+" of "+q+" free",
+  notConfT:"The app is not set up yet",notConfP:"Fill in config.js with the Entra ID app details and the SharePoint site address, following the setup guide.",
+  msalT:"msal-browser.min.js is missing",msalP:"Upload msal-browser.min.js to the same folder as index.html.",
+  loading:"Loading…",siteErrT:"Can't open the SharePoint site",siteNoAccess:"Your account has no access to the booking site. Ask the administrator to add you as a site member.",
+  errorT:"Something went wrong",errorP:m=>"Error: "+m,
+  firstRunT:"First start",firstRunP:"The app needs two lists in the SharePoint site: “Echipamente” and “Rezervari”. I'll create them now, with all the required columns.",
+  createLists:"Create the lists",creatingLists:"Creating the lists…",listsCreated:"The lists have been created",listsFail:m=>"Couldn't create the lists: "+m,
+  notReadyP:"The administrator needs to open the app once to create the lists. Please check back a little later.",
+  welcome:"Welcome",loginP:"Use your school Microsoft 365 account to see which equipment is free and make bookings.",loginBtn:"Sign in with your school account",
+  signOut:"Sign out",adminSfx:" · administrator",authFail:m=>"Sign-in failed: "+m,
+  loadFail:m=>"Couldn't load the data: "+m,refreshFail:"Couldn't refresh the data. Check your connection.",mineFail:"Couldn't load your bookings.",weekFail:"Couldn't load the bookings.",
+  noEqT:"No equipment in the inventory yet",noEqAdmin:"Add the laptops, iPads and other equipment in the Inventory tab.",noEqUser:"The administrator hasn't added any equipment yet. Please check back later.",openInv:"Open the inventory",
+  close:"Close",freeLabel:q=>"free of "+q,bookedAlready:"Already booked",you:"You",aTeacher:"A teacher",pcs:n=>n+" pcs",cls:c=>" · class "+c,
+  pastHour:"This lesson is over.",noneFree:"Nothing is free in this lesson. Try another lesson or another item.",
+  newBooking:"New booking",qtyL:"Quantity",intervalL:"Time",classL:"Class",noteL:"Note (optional)",classPh:"e.g. 7B",notePh:"e.g. online test, room 12",
+  onlyP:p=>"Lesson "+p+" only",untilP:q=>"Until lesson "+q+" (inclusive)",maxHint:m=>"Up to "+m+" available for the whole time chosen.",
+  bookBtn:(n,e)=>"Book "+(n>0?n+" × ":"")+e,checking:"Checking…",saving:"Saving…",minOne:"Choose at least one item.",
+  onlyX:m=>"Only "+m+" are free for the time chosen. Reduce the quantity or the time.",raceLost:"Someone else booked the same items just now. Check availability again.",
+  noWrite:"You can't write to the booking list. Ask the administrator to add you as a site member.",saveFail:m=>"The booking wasn't saved: "+m,
+  bookedToast:(n,e,d)=>"Booked: "+n+" × "+e+", "+d,cancel:"Cancel",yesCancel:"Yes, cancel",no:"No",cancelled:"The booking has been cancelled",cancelOwn:"You can only cancel your own bookings.",cancelFail:"Cancelling didn't work. Try again.",
+  mineLoading:"Loading your bookings…",noMineT:"You have no upcoming bookings",noMineP:"Pick an item in Booking schedule and click a free lesson.",bookNow:"Book now",
+  mineTitle:"My bookings",mineCount:n=>n===1?"1 upcoming booking":n+" upcoming bookings",todaySfx:" · today",ended:"Finished",eqDeleted:"Deleted item",
+  delQ:"Delete permanently?",yesDel:"Yes, delete",deletedT:e=>e+" was removed from the inventory",delFail:"Deleting didn't work.",edit:"Edit",del:"Delete",
+  eqTitle:"Equipment",eqEmptyAdmin:"The inventory is empty. Add the first item below.",eqEmptyUser:"The administrator hasn't added any equipment yet.",adminOnly:"Only administrators can change the inventory.",
+  addEq:"Add equipment",quick:"Quick:",quickNames:["Laptops","iPads","Mobile projector","Document camera","Portable speakers"],
+  nameL:"Name",pcsL:"Quantity",noteEqL:"Note (location, accessories)",namePh:"e.g. Laptops",qtyPh:"e.g. 25",noteEqPh:"e.g. Cabinet in room 14, with chargers",
+  save:"Save",addBtn:"Add to inventory",cancelEdit:"Cancel",saved:"Saved",added:e=>e+" was added",fillErr:"Enter a name and a quantity of at least 1.",
+  noInvRight:"You aren't allowed to change the inventory.",notSaved:m=>"Not saved: "+m,busy:"The Microsoft service is busy. Try again."},
+
+de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Geräteausleihe",
+  tabCal:"Belegungsplan",tabMine:"Meine Reservierungen",tabInv:"Inventar",prevWeek:"Vorige Woche",nextWeek:"Nächste Woche",today:"Heute",
+  legOk:"Verfügbar",legWarn:"Unter 25 % frei",legFull:"Ausgebucht",legHint:"Klicken Sie auf eine Stunde, um zu reservieren oder zu sehen, wer reserviert hat.",
+  hourCol:"Stunde",period:n=>n+". Stunde",periods:(a,b)=>a+".–"+b+". Stunde",
+  freeOf:q=>"von "+q+" frei",full:"Belegt",yours:"Ihre Reservierung",cellAria:(e,d,p,f,q)=>e+", "+d+", "+p+". Stunde: "+f+" von "+q+" frei",
+  notConfT:"Die App ist noch nicht eingerichtet",notConfP:"Tragen Sie in config.js die Daten der Entra-ID-App und die Adresse der SharePoint-Website ein, wie in der Installationsanleitung beschrieben.",
+  msalT:"Die Datei msal-browser.min.js fehlt",msalP:"Laden Sie msal-browser.min.js in denselben Ordner wie index.html hoch.",
+  loading:"Wird geladen…",siteErrT:"Die SharePoint-Website lässt sich nicht öffnen",siteNoAccess:"Ihr Konto hat keinen Zugriff auf die Reservierungswebsite. Bitten Sie die Administration, Sie als Mitglied der Website hinzuzufügen.",
+  errorT:"Ein Fehler ist aufgetreten",errorP:m=>"Fehler: "+m,
+  firstRunT:"Erster Start",firstRunP:"Die App braucht zwei Listen auf der SharePoint-Website: „Echipamente“ und „Rezervari“. Sie werden jetzt mit allen nötigen Spalten angelegt.",
+  createLists:"Listen anlegen",creatingLists:"Listen werden angelegt…",listsCreated:"Die Listen wurden angelegt",listsFail:m=>"Die Listen konnten nicht angelegt werden: "+m,
+  notReadyP:"Die Administration muss die App einmal öffnen, um die Listen anzulegen. Bitte schauen Sie später wieder vorbei.",
+  welcome:"Willkommen",loginP:"Melden Sie sich mit Ihrem Microsoft-365-Schulkonto an, um freie Geräte zu sehen und zu reservieren.",loginBtn:"Mit dem Schulkonto anmelden",
+  signOut:"Abmelden",adminSfx:" · Administration",authFail:m=>"Anmeldung fehlgeschlagen: "+m,
+  loadFail:m=>"Die Daten konnten nicht geladen werden: "+m,refreshFail:"Die Daten konnten nicht aktualisiert werden. Prüfen Sie die Verbindung.",mineFail:"Ihre Reservierungen konnten nicht geladen werden.",weekFail:"Die Reservierungen konnten nicht geladen werden.",
+  noEqT:"Noch keine Geräte im Inventar",noEqAdmin:"Fügen Sie Laptops, iPads und weitere Geräte im Reiter Inventar hinzu.",noEqUser:"Die Administration hat noch keine Geräte eingetragen. Bitte schauen Sie später wieder vorbei.",openInv:"Inventar öffnen",
+  close:"Schließen",freeLabel:q=>"frei von "+q,bookedAlready:"Bereits reserviert",you:"Sie",aTeacher:"Eine Lehrkraft",pcs:n=>n+" Stk.",cls:c=>" · Klasse "+c,
+  pastHour:"Diese Stunde ist vorbei.",noneFree:"In dieser Stunde ist nichts mehr frei. Wählen Sie eine andere Stunde oder ein anderes Gerät.",
+  newBooking:"Neue Reservierung",qtyL:"Anzahl",intervalL:"Zeitraum",classL:"Klasse",noteL:"Notiz (optional)",classPh:"z. B. 7b",notePh:"z. B. Online-Test, Raum 12",
+  onlyP:p=>"Nur "+p+". Stunde",untilP:q=>"Bis einschließlich "+q+". Stunde",maxHint:m=>"Höchstens "+m+" im gesamten Zeitraum verfügbar.",
+  bookBtn:(n,e)=>(n>0?n+" × ":"")+e+" reservieren",checking:"Wird geprüft…",saving:"Wird gespeichert…",minOne:"Wählen Sie mindestens ein Gerät.",
+  onlyX:m=>"Im gewählten Zeitraum sind nur "+m+" frei. Verringern Sie die Anzahl oder den Zeitraum.",raceLost:"Jemand anderes hat soeben dieselben Geräte reserviert. Bitte prüfen Sie die Verfügbarkeit erneut.",
+  noWrite:"Sie haben keine Schreibrechte für die Reservierungsliste. Bitten Sie die Administration, Sie als Mitglied der Website hinzuzufügen.",saveFail:m=>"Die Reservierung wurde nicht gespeichert: "+m,
+  bookedToast:(n,e,d)=>"Reserviert: "+n+" × "+e+", "+d,cancel:"Stornieren",yesCancel:"Ja, stornieren",no:"Nein",cancelled:"Die Reservierung wurde storniert",cancelOwn:"Sie können nur Ihre eigenen Reservierungen stornieren.",cancelFail:"Stornieren hat nicht funktioniert. Bitte erneut versuchen.",
+  mineLoading:"Ihre Reservierungen werden geladen…",noMineT:"Sie haben keine anstehenden Reservierungen",noMineP:"Wählen Sie im Belegungsplan ein Gerät und klicken Sie auf eine freie Stunde.",bookNow:"Jetzt reservieren",
+  mineTitle:"Meine Reservierungen",mineCount:n=>n===1?"1 anstehende Reservierung":n+" anstehende Reservierungen",todaySfx:" · heute",ended:"Beendet",eqDeleted:"Gelöschtes Gerät",
+  delQ:"Endgültig löschen?",yesDel:"Ja, löschen",deletedT:e=>e+" wurde aus dem Inventar gelöscht",delFail:"Löschen hat nicht funktioniert.",edit:"Bearbeiten",del:"Löschen",
+  eqTitle:"Geräte",eqEmptyAdmin:"Das Inventar ist leer. Fügen Sie unten das erste Gerät hinzu.",eqEmptyUser:"Die Administration hat noch keine Geräte eingetragen.",adminOnly:"Nur die Administration kann das Inventar ändern.",
+  addEq:"Gerät hinzufügen",quick:"Schnell:",quickNames:["Laptops","iPads","Mobiler Beamer","Dokumentenkamera","Tragbare Lautsprecher"],
+  nameL:"Bezeichnung",pcsL:"Anzahl",noteEqL:"Notiz (Standort, Zubehör)",namePh:"z. B. Laptops",qtyPh:"z. B. 25",noteEqPh:"z. B. Schrank in Raum 14, mit Ladegeräten",
+  save:"Speichern",addBtn:"Zum Inventar hinzufügen",cancelEdit:"Abbrechen",saved:"Gespeichert",added:e=>e+" wurde hinzugefügt",fillErr:"Geben Sie eine Bezeichnung und eine Anzahl von mindestens 1 ein.",
+  noInvRight:"Sie dürfen das Inventar nicht ändern.",notSaved:m=>"Nicht gespeichert: "+m,busy:"Der Microsoft-Dienst ist ausgelastet. Bitte erneut versuchen."}
+};
+function pickLang(){
+  let saved=null;try{saved=localStorage.getItem("rez-lang")}catch(e){}
+  if(saved&&I18N[saved])return saved;
+  const c=(CFG.language||"auto").toLowerCase();if(I18N[c])return c;
+  const nav=(navigator.languages||[navigator.language||"en"]).map(x=>x.slice(0,2).toLowerCase());
+  return nav.find(x=>I18N[x])||"en";
+}
+const LANG=pickLang();const L=I18N[LANG];
+function t(k,...a){const v=L[k];return typeof v==="function"?v(...a):v}
+document.documentElement.lang=LANG;document.title=t("appTitle");
+for(const el of document.querySelectorAll("[data-i18n]"))el.textContent=t(el.dataset.i18n);
+for(const el of document.querySelectorAll("[data-i18n-aria]"))el.setAttribute("aria-label",t(el.dataset.i18nAria));
+const langSel=document.getElementById("lang");langSel.value=LANG;
+langSel.addEventListener("change",()=>{try{localStorage.setItem("rez-lang",langSel.value)}catch(e){}location.reload()});
+
+const PERIODS=(CFG.periods||[]).map((p,i)=>({n:i+1,s:p.s,e:p.e}));
+const NP=PERIODS.length;
+const SCOPES=["User.Read","Sites.ReadWrite.All"];
+const SETUP_SCOPES=["Sites.Manage.All"];
+const LIST_EQ="Echipamente", LIST_BK="Rezervari";
+const GRAPH="https://graph.microsoft.com/v1.0";
+
+const S={pca:null,account:null,admin:false,siteId:null,eqList:null,bkList:null,
+  eq:[],week:[],weekLoaded:false,mine:[],mineLoaded:false,sel:null,weekStart:monday(new Date()),tab:"cal",
+  open:null,confirm:null,editing:null,busy:false};
+
+// ---------- helpers ----------
+function h(tag,attrs,...kids){const el=document.createElement(tag);
+  if(attrs)for(const k in attrs){const v=attrs[k];if(v==null||v===false)continue;
+    if(k==="on")for(const ev in v)el.addEventListener(ev,v[ev]);
+    else if(k==="class")el.className=v; else if(k==="style")el.style.cssText=v;
+    else if(k in el&&k!=="list"&&k!=="form")el[k]=v; else el.setAttribute(k,v===true?"":v);}
+  for(const c of kids.flat()){if(c==null||c===false)continue;el.append(c instanceof Node?c:document.createTextNode(String(c)));}
+  return el;}
+const $=id=>document.getElementById(id);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function pad(n){return String(n).padStart(2,"0")}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function parse(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function monday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+const F={wdLong:new Intl.DateTimeFormat(L.locale,{weekday:"long"}),dm:new Intl.DateTimeFormat(L.locale,{day:"numeric",month:"short"}),
+  short:new Intl.DateTimeFormat(L.locale,{weekday:"short",day:"numeric",month:"short"}),long:new Intl.DateTimeFormat(L.locale,{weekday:"long",day:"numeric",month:"long"})};
+function fmtDay(s){return cap(F.short.format(parse(s)))}
+function longDay(s){return cap(F.long.format(parse(s)))}
+function pr(b){const a=PERIODS[b.from-1]||{},z=PERIODS[b.to-1]||{};return b.from===b.to?t("period",b.from)+" ("+a.s+"–"+a.e+")":t("periods",b.from,b.to)+" ("+a.s+"–"+z.e+")"}
+function todayIso(){return iso(new Date())}
+function passed(date,p){const td=todayIso();if(date<td)return true;if(date>td)return false;
+  const[hh,mm]=PERIODS[p-1].e.split(":").map(Number);const n=new Date();return n.getHours()*60+n.getMinutes()>=hh*60+mm;}
+function eqById(id){return S.eq.find(e=>e.id===id)}
+let toastT;function toast(msg){const el=$("toast");el.textContent=msg;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,3500)}
+function notice(msg){const n=$("notice");n.textContent=msg||"";n.hidden=!msg}
+function booked(list,eq,date,p,filter){let s=0;for(const b of list)if(b.eq===eq&&b.date===date&&b.from<=p&&b.to>=p&&(!filter||filter(b)))s+=b.qty;return s}
+function isMine(b){if(!S.account)return false;const oid=S.account.localAccountId||(S.account.idTokenClaims||{}).oid;
+  return (b.byId&&oid&&b.byId===oid)||(b.byEmail&&b.byEmail.toLowerCase()===(S.account.username||"").toLowerCase())}
+function emptyBox(title,text,...extra){return h("div",{class:"panel empty"},h("h2",null,title),text?h("p",{class:"muted"},text):null,...extra)}
+function screen(...kids){$("screen").replaceChildren(...kids);$("screen").hidden=!kids.length;$("app").hidden=!!kids.length}
+
+// ---------- auth ----------
+function configured(){return CFG.clientId&&!/PUNE-AICI/.test(CFG.clientId)&&CFG.tenantId&&!/PUNE-AICI/.test(CFG.tenantId)&&CFG.siteUrl&&!/NUMESCOALA/.test(CFG.siteUrl)}
+function redirectUri(){return location.origin+location.pathname.replace(/index\.html$/,"")}
+async function token(scopes){
+  try{return (await S.pca.acquireTokenSilent({scopes,account:S.account})).accessToken}
+  catch(e){if(e instanceof msal.InteractionRequiredAuthError){await S.pca.acquireTokenRedirect({scopes,account:S.account});return new Promise(()=>{})}throw e}}
+async function g(path,opts={},scopes=SCOPES){
+  const url=path.startsWith("http")?path:GRAPH+path;
+  for(let attempt=0;attempt<3;attempt++){
+    const tk=await token(scopes);
+    const r=await fetch(url,{method:opts.method||"GET",headers:Object.assign({Authorization:"Bearer "+tk,Prefer:"HonorNonIndexedQueriesWarningMayFailRandomly"},opts.body?{"Content-Type":"application/json"}:{}),body:opts.body?JSON.stringify(opts.body):undefined});
+    if(r.status===429||r.status===503){await new Promise(res=>setTimeout(res,(+r.headers.get("Retry-After")||2)*1000));continue}
+    if(r.status===204)return null;
+    const j=await r.json().catch(()=>null);
+    if(!r.ok){const err=new Error((j&&j.error&&j.error.message)||("HTTP "+r.status));err.status=r.status;throw err}
+    return j;}
+  const err=new Error(t("busy"));err.status=429;throw err;}
+async function gAll(path){let out=[],next=path;while(next){const j=await g(next);out=out.concat(j.value||[]);next=j["@odata.nextLink"]||null}return out}
+
+// ---------- SharePoint ----------
+async function resolveSite(){const u=new URL(CFG.siteUrl);const j=await g("/sites/"+u.hostname+":"+u.pathname.replace(/\/$/,""));S.siteId=j.id}
+async function findLists(){const ls=await gAll("/sites/"+S.siteId+"/lists?$select=id,displayName&$top=200");
+  S.eqList=(ls.find(l=>l.displayName===LIST_EQ)||{}).id||null;S.bkList=(ls.find(l=>l.displayName===LIST_BK)||{}).id||null}
+async function createLists(){
+  const base="/sites/"+S.siteId+"/lists";
+  if(!S.eqList){const r=await g(base,{method:"POST",body:{displayName:LIST_EQ,list:{template:"genericList"},
+    columns:[{name:"Cantitate",number:{}},{name:"Nota",text:{}}]}},SETUP_SCOPES);S.eqList=r.id}
+  if(!S.bkList){const r=await g(base,{method:"POST",body:{displayName:LIST_BK,list:{template:"genericList"},
+    columns:[{name:"EchipamentId",text:{},indexed:true},{name:"Data",text:{},indexed:true},{name:"OraStart",number:{}},{name:"OraSfarsit",number:{}},
+      {name:"Cantitate",number:{}},{name:"Clasa",text:{}},{name:"Nota",text:{}}]}},SETUP_SCOPES);S.bkList=r.id}}
+function items(list){return "/sites/"+S.siteId+"/lists/"+list+"/items"}
+function mapBk(it){const f=it.fields||{};const u=(it.createdBy||{}).user||{};
+  return {id:it.id,eq:String(f.EchipamentId||""),date:f.Data,from:+f.OraStart,to:+f.OraSfarsit,qty:+f.Cantitate||0,cls:f.Clasa||"",note:f.Nota||"",
+    byId:u.id||"",byName:u.displayName||"",byEmail:u.email||""}}
+async function loadEq(){const r=await gAll(items(S.eqList)+"?$expand=fields($select=Title,Cantitate,Nota)&$top=500");
+  S.eq=r.map(it=>({id:it.id,name:(it.fields||{}).Title||"",qty:+(it.fields||{}).Cantitate||0,note:(it.fields||{}).Nota||""}))
+    .filter(e=>e.name&&e.qty>0).sort((a,b)=>a.name.localeCompare(b.name,L.locale))}
+async function loadRange(a,b){const q="?$expand=fields($select=Title,EchipamentId,Data,OraStart,OraSfarsit,Cantitate,Clasa,Nota)&$select=id,createdBy"+
+  "&$filter="+encodeURIComponent("fields/Data ge '"+a+"' and fields/Data le '"+b+"'")+"&$top=999";
+  return (await gAll(items(S.bkList)+q)).map(mapBk).filter(x=>x.date&&x.from>=1)}
+async function loadWeek(){const key=iso(S.weekStart);const rows=await loadRange(key,iso(addDays(S.weekStart,4)));if(iso(S.weekStart)!==key)return;S.week=rows;S.weekLoaded=true}
+async function loadMine(){const td=todayIso();const rows=await loadRange(td,iso(addDays(new Date(),370)));S.mine=rows.filter(isMine);S.mineLoaded=true}
+
+// ---------- boot ----------
+async function boot(){
+  if(CFG.schoolName)$("school").textContent=CFG.schoolName;
+  if(!configured()){screen(emptyBox(t("notConfT"),t("notConfP")));return}
+  if(!window.msal){screen(emptyBox(t("msalT"),t("msalP")));return}
+  S.pca=new msal.PublicClientApplication({auth:{clientId:CFG.clientId,authority:"https://login.microsoftonline.com/"+CFG.tenantId,redirectUri:redirectUri()},
+    cache:{cacheLocation:"localStorage"}});
+  await S.pca.initialize();
+  let res=null;try{res=await S.pca.handleRedirectPromise()}catch(e){notice(t("authFail",e.message))}
+  S.account=(res&&res.account)||S.pca.getAllAccounts()[0]||null;
+  if(!S.account){showLogin();return}
+  S.pca.setActiveAccount(S.account);
+  S.admin=(CFG.admins||[]).map(x=>x.toLowerCase()).includes((S.account.username||"").toLowerCase());
+  $("who").replaceChildren(h("span",null,(S.account.name||S.account.username)+(S.admin?t("adminSfx"):"")),
+    h("button",{class:"linkbtn",on:{click:()=>S.pca.logoutRedirect({account:S.account,postLogoutRedirectUri:redirectUri()})}},t("signOut")));
+  screen(emptyBox(t("loading"),""));
+  try{await resolveSite();await findLists()}
+  catch(e){screen(emptyBox(t("siteErrT"),e.status===403||e.status===404?t("siteNoAccess"):t("errorP",e.message)));return}
+  if(!S.eqList||!S.bkList){
+    if(S.admin){const btn=h("button",{class:"btn primary big",on:{click:async()=>{btn.disabled=true;btn.textContent=t("creatingLists");
+      try{await createLists();toast(t("listsCreated"));start()}catch(e){btn.disabled=false;btn.textContent=t("createLists");notice(t("listsFail",e.message))}}}},t("createLists"));
+      screen(emptyBox(t("firstRunT"),t("firstRunP"),btn))}
+    else screen(emptyBox(t("notConfT"),t("notReadyP")));
+    return}
+  start();
+}
+function showLogin(){
+  const ms=h("span",{class:"ms"},h("i",null,h("b",{style:"background:#f25022"}),h("b",{style:"background:#7fba00"}),h("b",{style:"background:#00a4ef"}),h("b",{style:"background:#ffb900"})),t("loginBtn"));
+  screen(h("div",{class:"login"},h("div",{class:"panel"},h("h2",null,t("welcome")),
+    h("p",{class:"muted",style:"margin:0"},t("loginP")),
+    h("button",{class:"btn primary big",on:{click:()=>S.pca.loginRedirect({scopes:SCOPES})}},ms))));
+}
+async function start(){
+  screen();renderTabs();
+  try{await loadEq();renderChips();renderCal();await loadWeek()}catch(e){notice(t("loadFail",e.message))}
+  renderCal();
+  setInterval(()=>{if(document.visibilityState==="visible"&&$("overlay").hidden&&!S.busy)refresh()},30000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("overlay").hidden)refresh()});
+}
+async function refresh(){
+  try{await loadWeek();notice("");renderChips();
+    if(S.tab==="cal")renderCal();if(S.tab==="mine"){await loadMine();renderMine()}if(S.tab==="inv")renderInv()}
+  catch(e){notice(t("refreshFail"))}}
+
+// ---------- tabs ----------
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;S.tab=b.dataset.tab;renderTabs()});
+function renderTabs(){for(const b of document.querySelectorAll("#tabs button"))b.setAttribute("aria-selected",b.dataset.tab===S.tab);
+  $("view-cal").hidden=S.tab!=="cal";$("view-mine").hidden=S.tab!=="mine";$("view-inv").hidden=S.tab!=="inv";
+  if(S.tab==="mine"){renderMine();loadMine().then(renderMine).catch(()=>notice(t("mineFail")))}
+  if(S.tab==="inv")renderInv(); if(S.tab==="cal")renderCal();}
+async function goWeek(d){S.weekStart=d;S.weekLoaded=false;renderCal();try{await loadWeek()}catch(e){notice(t("weekFail"))}renderCal()}
+$("prevw").onclick=()=>goWeek(addDays(S.weekStart,-7));
+$("nextw").onclick=()=>goWeek(addDays(S.weekStart,7));
+$("thisw").onclick=()=>goWeek(monday(new Date()));
+
+// ---------- calendar ----------
+function renderChips(){const box=$("eqchips");box.replaceChildren();
+  for(const e of S.eq)box.append(h("button",{class:"chip","aria-pressed":String(S.sel===e.id),on:{click:()=>{S.sel=e.id;renderChips();renderCal()}}},e.name,h("small",{class:"num"},"×"+e.qty)));}
+function renderCal(){
+  const ws=S.weekStart,we=addDays(ws,4);
+  $("weeklabel").textContent=F.dm.format(ws)+" – "+F.dm.format(we);
+  const body=$("calbody");
+  if(!S.eq.length){body.replaceChildren(emptyBox(t("noEqT"),S.admin?t("noEqAdmin"):t("noEqUser"),
+    S.admin?h("button",{class:"btn primary",on:{click:()=>{S.tab="inv";renderTabs()}}},t("openInv")):null));return}
+  if(!S.sel||!eqById(S.sel)){S.sel=S.eq[0].id;renderChips()}
+  const eq=eqById(S.sel);const dates=[0,1,2,3,4].map(i=>iso(addDays(ws,i)));const td=todayIso();
+  const thead=h("thead",null,h("tr",null,h("th",null,t("hourCol")),dates.map(d=>h("th",{class:d===td?"today":""},cap(F.wdLong.format(parse(d))),h("span",{class:"num"},F.dm.format(parse(d)))))));
+  const tbody=h("tbody");
+  for(const p of PERIODS){
+    const tr=h("tr",null,h("th",null,t("period",p.n),h("small",{class:"num"},p.s+"–"+p.e)));
+    for(const d of dates){
+      const used=booked(S.week,eq.id,d,p.n);const free=Math.max(0,eq.qty-used);const past=passed(d,p.n);
+      const mine=S.week.some(b=>b.eq===eq.id&&b.date===d&&b.from<=p.n&&b.to>=p.n&&isMine(b));
+      const cls=free===0?"full":(free/eq.qty<=.25?"warn":"ok");const pct=Math.min(100,Math.round(used/eq.qty*100));
+      tr.append(h("td",null,h("button",{class:"cell "+cls,disabled:!S.weekLoaded||(past&&!used),on:{click:()=>openSlot(eq.id,d,p.n)},"aria-label":t("cellAria",eq.name,fmtDay(d),p.n,free,eq.qty)},
+        h("span",{class:"free num"},free===0?t("full"):free+" ",free===0?null:h("small",null,t("freeOf",eq.qty))),
+        h("span",{class:"meter"},h("i",{style:"width:"+pct+"%"})),
+        mine?h("span",{class:"mine"},t("yours")):null)));
+    }
+    tbody.append(tr);
+  }
+  const box=h("div",{class:"gridbox"},h("table",{class:"tt"},thead,tbody));
+  if(!S.weekLoaded)box.style.opacity=".5";
+  body.replaceChildren(box);
+}
+
+// ---------- slot sheet ----------
+function closeSheet(){$("overlay").hidden=true;S.open=null}
+$("overlay").addEventListener("click",e=>{if(e.target.id==="overlay")closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("overlay").hidden)closeSheet()});
+function openSlot(eqId,date,p){S.open={eqId,date,p};S.confirm=null;$("overlay").hidden=false;renderSheet(true)}
+function renderSheet(focus){
+  if(!S.open)return;const{eqId,date,p}=S.open;const eq=eqById(eqId);if(!eq){closeSheet();return}
+  const here=S.week.filter(b=>b.eq===eqId&&b.date===date&&b.from<=p&&b.to>=p).sort((a,b)=>a.from-b.from);
+  const free=Math.max(0,eq.qty-here.reduce((s,b)=>s+b.qty,0));const past=passed(date,p);const per=PERIODS[p-1];
+  const kids=[
+    h("header",null,h("div",null,h("div",{class:"eyebrow"},eq.name),h("h2",null,longDay(date)+" · "+t("period",p)),h("div",{class:"muted num"},per.s+"–"+per.e)),
+      h("button",{class:"x","aria-label":t("close"),on:{click:closeSheet}},"×")),
+    h("div",null,h("div",{class:"big num",style:"color:var(--"+(free===0?"bad":"ok")+")"},free),h("div",{class:"hint"},t("freeLabel",eq.qty)))];
+  if(here.length){const list=h("div",{class:"list"});
+    for(const b of here){const mine=isMine(b);const can=(mine||S.admin)&&!passed(b.date,b.to);
+      list.append(h("div",{class:"who-row"},h("div",{class:"main"},h("b",null,mine?t("you"):(b.byName||t("aTeacher"))),
+        h("div",{class:"hint num"},t("pcs",b.qty)+" · "+pr(b)+(b.cls?t("cls",b.cls):"")+(b.note?" · "+b.note:""))),
+        can?cancelBtn(b,()=>renderSheet()):null))}
+    kids.push(h("div",null,h("div",{class:"eyebrow"},t("bookedAlready")),list))}
+  if(past)kids.push(h("p",{class:"hint"},t("pastHour")));
+  else if(free===0)kids.push(h("p",{class:"hint"},t("noneFree")));
+  else kids.push(bookForm(eq,date,p));
+  $("sheet").replaceChildren(...kids);
+  if(focus){const f=$("sheet").querySelector("#bk-qty");(f||$("sheet").querySelector(".x")).focus()}
+}
+function maxFree(list,eq,date,from,to,filter){let m=Infinity;for(let q=from;q<=to;q++)m=Math.min(m,eq.qty-booked(list,eq.id,date,q,filter));return Math.max(0,m)}
+function bookForm(eq,date,p){
+  const err=h("div",{class:"err",hidden:true});
+  const to=h("select",{id:"bk-to"});
+  for(let q=p;q<=NP;q++){if(maxFree(S.week,eq,date,p,q)<1)break;to.append(h("option",{value:q},q===p?t("onlyP",p):t("untilP",q)))}
+  const qty=h("input",{id:"bk-qty",type:"number",min:1,value:1,inputMode:"numeric"});
+  const cls=h("input",{id:"bk-cls",type:"text",placeholder:t("classPh"),maxLength:20});
+  const note=h("input",{id:"bk-note",type:"text",placeholder:t("notePh"),maxLength:120});
+  const hint=h("div",{class:"hint num"});
+  const submit=h("button",{class:"btn primary",type:"submit"});
+  function upd(){const mx=maxFree(S.week,eq,date,p,+to.value);qty.max=mx;hint.textContent=t("maxHint",mx);submit.textContent=t("bookBtn",+qty.value||0,eq.name)}
+  to.onchange=upd;qty.oninput=upd;upd();
+  function fail(m){err.textContent=m;err.hidden=false;submit.disabled=false;upd();S.busy=false}
+  return h("form",{class:"grid",on:{submit:async e=>{e.preventDefault();err.hidden=true;
+    const n=Math.floor(+qty.value),end=+to.value;
+    if(!(n>=1))return fail(t("minOne"));
+    submit.disabled=true;submit.textContent=t("checking");S.busy=true;
+    try{
+      await loadWeek();
+      const mx=maxFree(S.week,eq,date,p,end);
+      if(n>mx){renderCal();return fail(t("onlyX",mx))}
+      submit.textContent=t("saving");
+      const created=await g(items(S.bkList),{method:"POST",body:{fields:{Title:eq.name+" · "+date+" · "+p+(end>p?"–"+end:""),
+        EchipamentId:eq.id,Data:date,OraStart:p,OraSfarsit:end,Cantitate:n,Clasa:cls.value.trim(),Nota:note.value.trim()}}});
+      // Rezervări simultane: cea creată ultima (id mai mare) cedează.
+      await loadWeek();
+      const myId=+created.id;const earlier=b=>+b.id<myId;
+      if(maxFree(S.week,eq,date,p,end,earlier)<n){await g(items(S.bkList)+"/"+created.id,{method:"DELETE"});await loadWeek();renderCal();return fail(t("raceLost"))}
+      S.busy=false;toast(t("bookedToast",n,eq.name,fmtDay(date)));closeSheet();renderCal();
+    }catch(x){fail(x.status===403?t("noWrite"):t("saveFail",x.message))}}}},
+    h("div",{class:"eyebrow full-span"},t("newBooking")),
+    h("label",{class:"f"},t("qtyL"),qty),h("label",{class:"f"},t("intervalL"),to),
+    h("label",{class:"f"},t("classL"),cls),h("label",{class:"f"},t("noteL"),note),
+    h("div",{class:"full-span",style:"display:flex;flex-direction:column;gap:8px"},hint,err,submit));
+}
+function cancelBtn(b,after){
+  if(S.confirm===b.id)return h("span",{class:"actions"},
+    h("button",{class:"btn sm danger solid",on:{click:async ev=>{ev.target.disabled=true;
+      try{await g(items(S.bkList)+"/"+b.id,{method:"DELETE"});toast(t("cancelled"));S.week=S.week.filter(x=>x.id!==b.id);S.mine=S.mine.filter(x=>x.id!==b.id)}
+      catch(x){toast(x.status===403?t("cancelOwn"):t("cancelFail"))}
+      S.confirm=null;after();renderCal()}}},t("yesCancel")),
+    h("button",{class:"btn sm",on:{click:()=>{S.confirm=null;after()}}},t("no")));
+  return h("button",{class:"btn sm danger",on:{click:()=>{S.confirm=b.id;after()}}},t("cancel"));
+}
+
+// ---------- my bookings ----------
+function renderMine(){
+  const v=$("view-mine");
+  if(!S.mineLoaded){v.replaceChildren(emptyBox(t("mineLoading"),""));return}
+  const td=todayIso();const up=S.mine.filter(b=>b.date>=td).sort((a,b)=>a.date.localeCompare(b.date)||a.from-b.from);
+  if(!up.length){v.replaceChildren(emptyBox(t("noMineT"),t("noMineP"),h("button",{class:"btn primary",on:{click:()=>{S.tab="cal";renderTabs()}}},t("bookNow"))));return}
+  const list=h("div",{class:"list"});let last="";
+  for(const b of up){
+    if(b.date!==last){list.append(h("div",{class:"daytitle"},longDay(b.date)+(b.date===td?t("todaySfx"):"")));last=b.date}
+    const eq=eqById(b.eq);
+    list.append(h("div",{class:"row"},h("div",{class:"main"},h("b",null,b.qty+" × "+(eq?eq.name:t("eqDeleted"))),
+      h("span",{class:"hint num"},pr(b)+(b.cls?t("cls",b.cls):"")+(b.note?" · "+b.note:""))),
+      passed(b.date,b.to)?h("span",{class:"pill"},t("ended")):cancelBtn(b,renderMine)));
+  }
+  v.replaceChildren(h("div",{class:"panel"},h("h2",null,t("mineTitle")),h("span",{class:"hint num"},t("mineCount",up.length)),list));
+}
+
+// ---------- inventory ----------
+function renderInv(){
+  const v=$("view-inv");const parts=[];const list=h("div",{class:"list"});
+  for(const e of S.eq){
+    const row=h("div",{class:"row"},h("div",{class:"main"},h("b",null,e.name),e.note?h("span",{class:"hint"},e.note):null),h("span",{class:"pill acc num"},t("pcs",e.qty)));
+    if(S.admin){
+      if(S.confirm==="eq:"+e.id)row.append(h("span",{class:"actions"},h("span",{class:"hint"},t("delQ")),
+        h("button",{class:"btn sm danger solid",on:{click:async()=>{try{await g(items(S.eqList)+"/"+e.id,{method:"DELETE"});toast(t("deletedT",e.name));await loadEq()}catch(x){toast(t("delFail"))}S.confirm=null;renderChips();renderInv()}}},t("yesDel")),
+        h("button",{class:"btn sm",on:{click:()=>{S.confirm=null;renderInv()}}},t("no"))));
+      else row.append(h("span",{class:"actions"},h("button",{class:"btn sm",on:{click:()=>{S.editing=e.id;renderInv()}}},t("edit")),
+        h("button",{class:"btn sm danger",on:{click:()=>{S.confirm="eq:"+e.id;renderInv()}}},t("del"))));
+    }
+    list.append(row);if(S.admin&&S.editing===e.id)list.append(eqForm(e));
+  }
+  parts.push(h("div",{class:"panel"},h("h2",null,t("eqTitle")),
+    S.eq.length?list:h("p",{class:"muted",style:"margin:0"},S.admin?t("eqEmptyAdmin"):t("eqEmptyUser")),
+    !S.admin?h("p",{class:"hint",style:"margin:0"},t("adminOnly")):null));
+  if(S.admin)parts.push(h("div",{class:"panel"},h("h2",null,t("addEq")),
+    h("div",{class:"chips"},h("span",{class:"hint",style:"align-self:center"},t("quick")),L.quickNames.map(n=>h("button",{class:"chip",type:"button",on:{click:()=>{$("eq-name-new").value=n;$("eq-qty-new").focus()}}},n))),
+    eqForm(null)));
+  v.replaceChildren(...parts);
+}
+function eqForm(e){
+  const sfx=e?e.id:"new";
+  const name=h("input",{id:"eq-name-"+sfx,type:"text",required:true,maxLength:60,value:e?e.name:"",placeholder:t("namePh")});
+  const qty=h("input",{id:"eq-qty-"+sfx,type:"number",min:1,max:999,required:true,value:e?e.qty:"",placeholder:t("qtyPh")});
+  const note=h("input",{id:"eq-note-"+sfx,type:"text",maxLength:120,value:e?e.note:"",placeholder:t("noteEqPh")});
+  const err=h("div",{class:"err",hidden:true});
+  return h("form",{class:"grid",style:e?"padding:10px 0 14px":"",on:{submit:async ev=>{ev.preventDefault();err.hidden=true;
+    const n=Math.floor(+qty.value),nm=name.value.trim();
+    if(!nm||!(n>=1)){err.textContent=t("fillErr");err.hidden=false;return}
+    try{const fields={Title:nm,Cantitate:n,Nota:note.value.trim()};
+      if(e){await g(items(S.eqList)+"/"+e.id+"/fields",{method:"PATCH",body:fields});S.editing=null;toast(t("saved"))}
+      else{const r=await g(items(S.eqList),{method:"POST",body:{fields}});S.sel=r.id;toast(t("added",nm))}
+      await loadEq();renderChips();renderInv();}
+    catch(x){err.textContent=x.status===403?t("noInvRight"):t("notSaved",x.message);err.hidden=false}}}},
+    h("label",{class:"f"},t("nameL"),name),h("label",{class:"f"},t("pcsL"),qty),h("label",{class:"f full-span"},t("noteEqL"),note),
+    h("div",{class:"full-span actions"},h("button",{class:"btn primary",type:"submit"},e?t("save"):t("addBtn")),
+      e?h("button",{class:"btn",type:"button",on:{click:()=>{S.editing=null;renderInv()}}},t("cancelEdit")):null,err));
+}
+
+boot().catch(e=>screen(emptyBox(t("errorT"),e.message||String(e))));
+})();
+</script>
+</body>
+</html>
