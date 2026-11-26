@@ -146,6 +146,10 @@ table.rt{border-collapse:collapse;width:100%;font-size:.9rem}
 .kpi span{font-size:.8rem;color:var(--muted);font-weight:700}
 .pill.run{background:var(--ok);color:var(--surface)}
 .pill.next{background:var(--accent-soft);color:var(--accent)}
+.pill.cancel{background:var(--bad-soft);color:var(--bad)}
+.rt tr.cx td{color:var(--muted)}
+.rt tr.cx td:nth-child(-n+3){text-decoration:line-through}
+.kpi.bad b{color:var(--bad)}
 .usage{display:grid;grid-template-columns:minmax(120px,auto) 1fr auto;gap:8px 14px;align-items:center}
 .usage .meter{display:block;height:8px}
 h3{font-family:var(--f-display);font-size:1rem;margin:6px 0 0}
@@ -267,7 +271,10 @@ ro:{locale:"ro-RO",schoolDefault:"Inventar școală",appTitle:"Rezervări echipa
   byEq:"Pe echipament",byTeacher:"Pe profesor",details:"Toate rezervările",
   csvBtn:"Descarcă pentru Excel (CSV)",printBtn:"Tipărește / PDF",repNone:"Nicio rezervare în perioada aleasă.",
   utilHint:wd=>"Utilizare = bucăți × ore rezervate, împărțit la bucăți × ore disponibile în cele "+wd+" zile lucrătoare (după stocul actual).",
-  repNote:"Rezervările anulate sunt șterse, deci nu apar în raport."},
+  repNote:"Statisticile de sus numără doar rezervările active. Rezervările anulate înainte de această versiune a aplicației au fost șterse și nu mai pot fi afișate.",
+  colsFail:m=>"Nu am putut adăuga coloanele pentru anulări în lista Rezervari: "+m,cancelledBy:(at,who)=>"anulată "+at+" de "+who,cancelCount:n=>n===1?"1 anulată":n+" anulate",
+  st_cancel:"Anulată",stActive:"Activă",kCancelled:"Anulate",cxTitle:"Rezervări anulate",cxNone:"Nicio rezervare anulată în perioada aleasă.",colCxAt:"Anulată la",colCxBy:"Anulată de",
+  nextTitle:"Următoarele rezervări",nextNone:"Nicio rezervare în următoarele 7 zile."},
 
 en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking",
   tabCal:"Booking schedule",tabMine:"My bookings",tabInv:"Inventory",prevWeek:"Previous week",nextWeek:"Next week",today:"Today",
@@ -314,7 +321,10 @@ en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking"
   byEq:"By equipment",byTeacher:"By teacher",details:"All bookings",
   csvBtn:"Download for Excel (CSV)",printBtn:"Print / PDF",repNone:"No bookings in the chosen period.",
   utilHint:wd=>"Utilisation = booked item-lessons divided by the item-lessons available on the "+wd+" weekdays in the period (based on current stock).",
-  repNote:"Cancelled bookings are deleted, so they don't appear in the report."},
+  repNote:"The figures at the top count active bookings only. Bookings cancelled before this version of the app were deleted and can't be shown.",
+  colsFail:m=>"Couldn't add the cancellation columns to the Rezervari list: "+m,cancelledBy:(at,who)=>"cancelled "+at+" by "+who,cancelCount:n=>n+" cancelled",
+  st_cancel:"Cancelled",stActive:"Active",kCancelled:"Cancelled",cxTitle:"Cancelled bookings",cxNone:"No bookings were cancelled in the chosen period.",colCxAt:"Cancelled on",colCxBy:"Cancelled by",
+  nextTitle:"Upcoming bookings",nextNone:"No bookings in the next 7 days."},
 
 de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Reservierung von Schulgeräten",
   tabCal:"Belegungsplan",tabMine:"Meine Reservierungen",tabInv:"Inventar",prevWeek:"Vorige Woche",nextWeek:"Nächste Woche",today:"Heute",
@@ -361,7 +371,10 @@ de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Reservierung von S
   byEq:"Nach Gerät",byTeacher:"Nach Lehrkraft",details:"Alle Reservierungen",
   csvBtn:"Für Excel herunterladen (CSV)",printBtn:"Drucken / PDF",repNone:"Keine Reservierungen im gewählten Zeitraum.",
   utilHint:wd=>"Auslastung = reservierte Geräte × Stunden geteilt durch die verfügbaren Geräte × Stunden an den "+wd+" Wochentagen im Zeitraum (nach aktuellem Bestand).",
-  repNote:"Stornierte Reservierungen werden gelöscht und erscheinen daher nicht im Bericht."}
+  repNote:"Die Kennzahlen oben zählen nur aktive Reservierungen. Reservierungen, die vor dieser App-Version storniert wurden, sind gelöscht und können nicht angezeigt werden.",
+  colsFail:m=>"Die Spalten für Stornierungen konnten nicht zur Liste Rezervari hinzugefügt werden: "+m,cancelledBy:(at,who)=>"storniert "+at+" von "+who,cancelCount:n=>n+" storniert",
+  st_cancel:"Storniert",stActive:"Aktiv",kCancelled:"Storniert",cxTitle:"Stornierte Reservierungen",cxNone:"Im gewählten Zeitraum wurde nichts storniert.",colCxAt:"Storniert am",colCxBy:"Storniert von",
+  nextTitle:"Nächste Reservierungen",nextNone:"Keine Reservierungen in den nächsten 7 Tagen."}
 };
 function pickLang(){
   let saved=null;try{saved=localStorage.getItem("rez-lang")}catch(e){}
@@ -637,7 +650,7 @@ function cancelBtn(b,after){
         const stamp=new Date().toISOString(),who=S.account.name||S.account.username||"";
         try{await g(items(S.bkList)+"/"+b.id+"/fields",{method:"PATCH",body:{Anulat:stamp,AnulatDe:who}})}
         catch(x){if(x.status===400)await g(items(S.bkList)+"/"+b.id,{method:"DELETE"});else throw x}// coloanele lipsesc încă
-        toast(t("cancelled"));S.week=S.week.filter(x=>x.id!==b.id);S.mine=S.mine.filter(x=>x.id!==b.id);
+        toast(t("cancelled"));S.week=S.week.filter(x=>x.id!==b.id);S.mine=S.mine.filter(x=>x.id!==b.id);S.liveNext=(S.liveNext||[]).filter(x=>x.id!==b.id);
         for(const x of S.live)if(x.id===b.id){x.cancelled=stamp;x.cancelledBy=who}}
       catch(x){toast(x.status===403?t("cancelOwn"):t("cancelFail"))}
       S.confirm=null;after();renderCal()}}},t("yesCancel")),
@@ -709,26 +722,32 @@ const FX={time:new Intl.DateTimeFormat(L.locale,{hour:"2-digit",minute:"2-digit"
   pct:new Intl.NumberFormat(L.locale,{style:"percent",maximumFractionDigits:0}),num:new Intl.NumberFormat(L.locale)};
 function mins(s){const[a,b]=String(s||"0:0").split(":").map(Number);return a*60+b}
 function eqName(id){const e=eqById(id);return e?e.name:t("eqDeleted")}
-function stateOf(b){const td=todayIso();if(b.date<td)return"done";if(b.date>td)return"next";
+function stateOf(b){if(b.cancelled)return"cancel";const td=todayIso();if(b.date<td)return"done";if(b.date>td)return"next";
   const n=new Date(),m=n.getHours()*60+n.getMinutes();
   const s=mins((PERIODS[b.from-1]||{}).s),e=mins((PERIODS[b.to-1]||{}).e);return m>=e?"done":m>=s?"run":"next"}
 function teacherCell(b){return h("td",null,h("b",null,b.byName||"—"),b.byEmail?h("div",{class:"hint"},b.byEmail):null)}
 function fmtCreated(s){if(!s)return"";const d=new Date(s);return isNaN(d)?"":FX.dt.format(d)}
 
 // ---------- admin: live ----------
-async function loadLive(){const d=S.liveDate;const rows=await loadRange(d,d);if(d!==S.liveDate)return;S.live=rows;S.liveLoaded=true;S.liveAt=new Date()}
+function cancelInfo(b){return b.cancelled?h("div",{class:"hint"},t("cancelledBy",fmtCreated(b.cancelled),b.cancelledBy||"—")):null}
+// Ziua afișată + următoarele 7 zile (pentru cele viitoare, doar rezervările active).
+async function loadLive(){const d=S.liveDate;
+  const[rows,next]=await Promise.all([loadRange(d,d,true),loadRange(iso(addDays(parse(d),1)),iso(addDays(parse(d),7)))]);
+  if(d!==S.liveDate)return;S.live=rows;S.liveNext=next;S.liveLoaded=true;S.liveAt=new Date()}
 function goLive(d){if(d!==S.liveDate){S.liveDate=d;S.liveLoaded=false;S.confirm=null}renderLive();
   loadLive().then(renderLive).catch(()=>notice(t("weekFail")))}
-function liveTable(rows,full){
+function liveTable(rows,full,withDate){
   const head=[t("colLessons"),t("colEq"),t("colQty"),t("colTeacher"),t("colClass"),t("colNote")];
+  if(withDate)head.unshift(t("colDate"));
   if(full)head.push(t("colStatus"),t("colBooked"),"");
+  const qi=withDate?3:2;
   const tb=h("tbody");
   for(const b of rows){const st=stateOf(b);
-    tb.append(h("tr",null,h("td",{class:"nw num"},pr(b)),h("td",null,eqName(b.eq)),h("td",{class:"n"},b.qty),teacherCell(b),h("td",null,b.cls),h("td",null,b.note),
-      full?h("td",null,h("span",{class:"pill "+st},t("st_"+st))):null,
+    tb.append(h("tr",{class:st==="cancel"?"cx":""},withDate?h("td",{class:"nw"},fmtDay(b.date)):null,h("td",{class:"nw num"},pr(b)),h("td",null,eqName(b.eq)),h("td",{class:"n"},b.qty),teacherCell(b),h("td",null,b.cls),h("td",null,b.note),
+      full?h("td",null,h("span",{class:"pill "+st},t("st_"+st)),cancelInfo(b)):null,
       full?h("td",{class:"hint nw"},fmtCreated(b.created)):null,
-      full?h("td",{class:"noprint"},st!=="done"?cancelBtn(b,renderLive):null):null))}
-  return h("div",{class:"tablebox"},h("table",{class:"rt"},h("thead",null,h("tr",null,head.map((x,i)=>h("th",{class:i===2?"n":""},x)))),tb));
+      full?h("td",{class:"noprint"},st==="run"||st==="next"?cancelBtn(b,renderLive):null):null))}
+  return h("div",{class:"tablebox"},h("table",{class:"rt"},h("thead",null,h("tr",null,head.map((x,i)=>h("th",{class:i===qi?"n":""},x)))),tb));
 }
 function renderLive(){
   const v=$("view-live");const d=S.liveDate;const td=todayIso();
@@ -752,8 +771,13 @@ function renderLive(){
           h("span",{class:"pill acc num"},t("outOf",u,e.qty)))}
       box.append(usage,liveTable(now,false))}
     parts.push(box)}
-  parts.push(h("div",{class:"panel"},h("h2",null,t("dayList")),h("span",{class:"hint num"},t("dayCount",rows.length)),
+  const nc=rows.filter(b=>b.cancelled).length;
+  parts.push(h("div",{class:"panel"},h("h2",null,t("dayList")),h("span",{class:"hint num"},t("dayCount",rows.length-nc)+(nc?" · "+t("cancelCount",nc):"")),
     rows.length?liveTable(rows,true):h("p",{class:"muted",style:"margin:0"},t("dayNone"))));
+  const next=(S.liveNext||[]).slice().sort((a,b)=>a.date.localeCompare(b.date)||a.from-b.from||eqName(a.eq).localeCompare(eqName(b.eq),L.locale));
+  parts.push(h("div",{class:"panel"},h("h2",null,t("nextTitle")),
+    h("span",{class:"hint num"},fmtDay(iso(addDays(parse(d),1)))+" – "+fmtDay(iso(addDays(parse(d),7)))+" · "+t("dayCount",next.length)),
+    next.length?liveTable(next,true,true):h("p",{class:"muted",style:"margin:0"},t("nextNone"))));
   v.replaceChildren(...parts);
 }
 
@@ -789,7 +813,7 @@ async function runRep(btn,err){
   const R=S.rep;err.hidden=true;
   if(!R.from||!R.to||R.from>R.to){err.textContent=t("rangeErr");err.hidden=false;return}
   R.loading=true;btn.disabled=true;renderRepOut();
-  try{const a=R.from,b=R.to;R.rows=await loadRange(a,b);R.range=[a,b]}
+  try{const a=R.from,b=R.to;R.rows=await loadRange(a,b,true);R.range=[a,b]}
   catch(e){err.textContent=t("loadFail",e.message);err.hidden=false}
   R.loading=false;btn.disabled=false;renderRepOut();
 }
@@ -805,39 +829,48 @@ function renderRepOut(){
   const out=$("rep-out");if(!out)return;const R=S.rep;
   if(R.loading){out.replaceChildren(emptyBox(t("repLoading"),""));return}
   if(!R.rows){out.replaceChildren();return}
-  const[a,b]=R.range;const rows=repFiltered();
+  const[a,b]=R.range;const all=repFiltered();
+  const rows=all.filter(x=>!x.cancelled),cx=all.filter(x=>x.cancelled);
   const sub=fmtDay(a)+" – "+fmtDay(b)+(R.eq?" · "+eqName(R.eq):"")+(R.q.trim()?" · „"+R.q.trim()+"“":"");
   const actions=h("div",{class:"actions noprint"},
-    h("button",{class:"btn",disabled:!rows.length,on:{click:()=>downloadCsv(rows,a,b)}},t("csvBtn")),
+    h("button",{class:"btn",disabled:!all.length,on:{click:()=>downloadCsv(all,a,b)}},t("csvBtn")),
     h("button",{class:"btn",on:{click:()=>window.print()}},t("printBtn")));
   const top=h("div",{class:"bar"},h("div",null,h("h2",null,t("repTitle")),h("span",{class:"hint num"},sub)),actions);
-  if(!rows.length){out.replaceChildren(h("div",{class:"panel"},top,h("p",{class:"muted",style:"margin:0"},t("repNone"))));return}
+  if(!all.length){out.replaceChildren(h("div",{class:"panel"},top,h("p",{class:"muted",style:"margin:0"},t("repNone"))));return}
   const ul=x=>x.qty*(x.to-x.from+1);
   const byT=new Map(),byE=new Map();
-  for(const x of rows){
-    const k=(x.byEmail||x.byName||"?").toLowerCase();
-    const tt=byT.get(k)||{name:x.byName||x.byEmail||"—",email:x.byEmail,n:0,items:0,ul:0};tt.n++;tt.items+=x.qty;tt.ul+=ul(x);byT.set(k,tt);
-    const e=byE.get(x.eq)||{id:x.eq,n:0,items:0,ul:0};e.n++;e.items+=x.qty;e.ul+=ul(x);byE.set(x.eq,e)}
+  const tKey=x=>(x.byEmail||x.byName||"?").toLowerCase();
+  const tGet=x=>{const k=tKey(x);let tt=byT.get(k);if(!tt){tt={name:x.byName||x.byEmail||"—",email:x.byEmail,n:0,items:0,ul:0,cx:0};byT.set(k,tt)}return tt};
+  for(const x of rows){const tt=tGet(x);tt.n++;tt.items+=x.qty;tt.ul+=ul(x);
+    const e=byE.get(x.eq)||{id:x.eq,n:0,items:0,ul:0,cx:0};e.n++;e.items+=x.qty;e.ul+=ul(x);byE.set(x.eq,e)}
+  for(const x of cx){tGet(x).cx++;const e=byE.get(x.eq)||{id:x.eq,n:0,items:0,ul:0,cx:0};e.cx++;byE.set(x.eq,e)}
   const wd=weekdays(a,b);const sum=f=>rows.reduce((s,x)=>s+f(x),0);
   const kpis=h("div",{class:"kpis"},
-    [[rows.length,"kBookings"],[sum(x=>x.qty),"kItems"],[sum(ul),"kUnitH"],[byT.size,"kTeachers"]].map(([n,l])=>h("div",{class:"kpi"},h("b",null,FX.num.format(n)),h("span",null,t(l)))));
+    [[rows.length,"kBookings"],[sum(x=>x.qty),"kItems"],[sum(ul),"kUnitH"],[new Set(rows.map(tKey)).size,"kTeachers"],[cx.length,"kCancelled",cx.length?"bad":""]]
+      .map(([n,l,c])=>h("div",{class:"kpi "+(c||"")},h("b",null,FX.num.format(n)),h("span",null,t(l)))));
   const eqRows=[...byE.values()].sort((x,y)=>y.ul-x.ul).map(e=>{const eq=eqById(e.id);const avail=eq?eq.qty*NP*wd:0;
-    return[eqName(e.id),e.n,e.items,e.ul,avail?FX.pct.format(e.ul/avail):"—"]});
-  const tRows=[...byT.values()].sort((x,y)=>y.ul-x.ul||x.name.localeCompare(y.name,L.locale)).map(x=>[h("td",null,h("b",null,x.name)),x.email,x.n,x.items,x.ul]);
+    return[eqName(e.id),e.n,e.items,e.ul,avail?FX.pct.format(e.ul/avail):"—",e.cx]});
+  const tRows=[...byT.values()].sort((x,y)=>y.ul-x.ul||y.cx-x.cx||x.name.localeCompare(y.name,L.locale)).map(x=>[h("td",null,h("b",null,x.name)),x.email,x.n,x.items,x.ul,x.cx]);
   const dRows=rows.map(x=>[h("td",{class:"nw"},fmtDay(x.date)),h("td",{class:"nw num"},pr(x)),eqName(x.eq),x.qty,teacherCell(x),x.cls,x.note,h("td",{class:"hint nw"},fmtCreated(x.created))]);
+  const cRows=cx.map(x=>[h("td",{class:"nw"},fmtDay(x.date)),h("td",{class:"nw num"},pr(x)),eqName(x.eq),x.qty,teacherCell(x),x.cls,
+    h("td",{class:"hint nw"},fmtCreated(x.created)),h("td",{class:"nw"},fmtCreated(x.cancelled)),x.cancelledBy||"—"]);
   out.replaceChildren(h("div",{class:"panel"},top,kpis,
-    h("h3",null,t("byEq")),rtable([t("colEq"),t("kBookings"),t("kItems"),t("kUnitH"),t("colUtil")],eqRows,[1,2,3,4]),
+    h("h3",null,t("byEq")),rtable([t("colEq"),t("kBookings"),t("kItems"),t("kUnitH"),t("colUtil"),t("kCancelled")],eqRows,[1,2,3,4,5]),
     h("p",{class:"hint",style:"margin:0"},t("utilHint",wd)),
-    h("h3",null,t("byTeacher")),rtable([t("colTeacher"),t("colEmail"),t("kBookings"),t("kItems"),t("kUnitH")],tRows,[2,3,4]),
-    h("h3",null,t("details")+" ("+rows.length+")"),rtable([t("colDate"),t("colLessons"),t("colEq"),t("colQty"),t("colTeacher"),t("colClass"),t("colNote"),t("colBooked")],dRows,[3]),
+    h("h3",null,t("byTeacher")),rtable([t("colTeacher"),t("colEmail"),t("kBookings"),t("kItems"),t("kUnitH"),t("kCancelled")],tRows,[2,3,4,5]),
+    h("h3",null,t("details")+" ("+rows.length+")"),
+    rows.length?rtable([t("colDate"),t("colLessons"),t("colEq"),t("colQty"),t("colTeacher"),t("colClass"),t("colNote"),t("colBooked")],dRows,[3]):h("p",{class:"muted",style:"margin:0"},"—"),
+    h("h3",null,t("cxTitle")+" ("+cx.length+")"),
+    cx.length?rtable([t("colDate"),t("colLessons"),t("colEq"),t("colQty"),t("colTeacher"),t("colClass"),t("colBooked"),t("colCxAt"),t("colCxBy")],cRows,[3]):h("p",{class:"muted",style:"margin:0"},t("cxNone")),
     h("p",{class:"hint",style:"margin:0"},t("repNote"))));
 }
 function downloadCsv(rows,a,b){
   const sep=LANG==="en"?",":";";
   const esc=v=>{v=v==null?"":String(v);return /[";,\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-  const lines=[[t("colDate"),t("colFrom"),t("colTo"),t("colTime"),t("colEq"),t("colQty"),t("colTeacher"),t("colEmail"),t("colClass"),t("colNote"),t("colBooked")].map(esc).join(sep)];
+  const lines=[[t("colDate"),t("colFrom"),t("colTo"),t("colTime"),t("colEq"),t("colQty"),t("colTeacher"),t("colEmail"),t("colClass"),t("colNote"),t("colBooked"),t("colStatus"),t("colCxAt"),t("colCxBy")].map(esc).join(sep)];
   for(const x of rows){const pa=PERIODS[x.from-1]||{},pz=PERIODS[x.to-1]||{};
-    lines.push([x.date,x.from,x.to,(pa.s||"")+"–"+(pz.e||""),eqName(x.eq),x.qty,x.byName,x.byEmail,x.cls,x.note,fmtCreated(x.created)].map(esc).join(sep))}
+    lines.push([x.date,x.from,x.to,(pa.s||"")+"–"+(pz.e||""),eqName(x.eq),x.qty,x.byName,x.byEmail,x.cls,x.note,fmtCreated(x.created),
+      x.cancelled?t("st_cancel"):t("stActive"),fmtCreated(x.cancelled),x.cancelledBy].map(esc).join(sep))}
   const url=URL.createObjectURL(new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}));
   const lnk=h("a",{href:url,download:t("csvName")+"_"+a+"_"+b+".csv"});document.body.append(lnk);lnk.click();lnk.remove();
   setTimeout(()=>URL.revokeObjectURL(url),3000);

@@ -8,7 +8,7 @@ window.APP_CONFIG = {
   siteUrl: "https://dsbukarest.sharepoint.com/sites/DSBU-Gerteausleihe",
 
   // Conturile care administrează inventarul (pot adăuga/șterge echipamente și anula orice rezervare)
-  admins: ["c.draghiciu@dsbu.ro"],
+  admins: ["c.draghiciu@dsbu.ro", "c.ilovan@dsbu.ro"],
 
   // Numele școlii, afișat în antet
   schoolName: "Deutsche Schule Bukarest",
