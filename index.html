@@ -133,6 +133,29 @@ label.f input:focus,label.f select:focus{border-color:var(--accent);outline:none
 .who-row:last-child{border-bottom:0}
 .who-row .main{flex:1;min-width:0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-weight:700;z-index:30;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.tablebox{overflow-x:auto}
+table.rt{border-collapse:collapse;width:100%;font-size:.9rem}
+.rt th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px;border-bottom:1.5px solid var(--line);white-space:nowrap}
+.rt td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rt tr:last-child td{border-bottom:0}
+.rt .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rt .nw{white-space:nowrap}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.kpi{background:var(--sunk);border-radius:10px;padding:12px 14px}
+.kpi b{display:block;font-family:var(--f-display);font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:.8rem;color:var(--muted);font-weight:700}
+.pill.run{background:var(--ok);color:var(--surface)}
+.pill.next{background:var(--accent-soft);color:var(--accent)}
+.usage{display:grid;grid-template-columns:minmax(120px,auto) 1fr auto;gap:8px 14px;align-items:center}
+.usage .meter{display:block;height:8px}
+h3{font-family:var(--f-display);font-size:1rem;margin:6px 0 0}
+@media print{
+  body{background:#fff;color:#000;padding:0;font-size:12px}
+  .who,#tabs,.noprint,#notice,.toast,.overlay{display:none!important}
+  .panel{border:0;padding:0 0 12px}
+  .kpi{border:1px solid #ccc;background:#fff}
+  .rt th,.rt td{padding:4px 6px}
+}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}}
 </style>
 </head>
@@ -159,6 +182,8 @@ label.f input:focus,label.f select:focus{border-color:var(--accent);outline:none
       <button role="tab" aria-selected="true" data-tab="cal" data-i18n="tabCal"></button>
       <button role="tab" aria-selected="false" data-tab="mine" data-i18n="tabMine"></button>
       <button role="tab" aria-selected="false" data-tab="inv" data-i18n="tabInv"></button>
+      <button role="tab" aria-selected="false" data-tab="live" data-i18n="tabLive" class="adm" hidden></button>
+      <button role="tab" aria-selected="false" data-tab="rep" data-i18n="tabRep" class="adm" hidden></button>
     </nav>
     <section id="view-cal" style="display:flex;flex-direction:column;gap:14px">
       <div class="bar">
@@ -180,6 +205,8 @@ label.f input:focus,label.f select:focus{border-color:var(--accent);outline:none
     </section>
     <section id="view-mine" hidden></section>
     <section id="view-inv" hidden></section>
+    <section id="view-live" hidden style="display:flex;flex-direction:column;gap:14px"></section>
+    <section id="view-rep" hidden style="display:flex;flex-direction:column;gap:14px"></section>
   </div>
 </div>
 
@@ -226,7 +253,21 @@ ro:{locale:"ro-RO",schoolDefault:"Inventar școală",appTitle:"Rezervări echipa
   addEq:"Adaugă echipament",quick:"Rapid:",quickNames:["Laptopuri","iPad-uri","Videoproiector mobil","Cameră de documente","Boxe portabile"],
   nameL:"Denumire",pcsL:"Bucăți",noteEqL:"Notă (unde se află, accesorii)",namePh:"ex. Laptopuri",qtyPh:"ex. 25",noteEqPh:"ex. Dulapul din sala 14, cu încărcătoare",
   save:"Salvează",addBtn:"Adaugă în inventar",cancelEdit:"Renunță",saved:"Salvat",added:e=>e+" a fost adăugat",fillErr:"Completează numele și o cantitate de cel puțin 1.",
-  noInvRight:"Nu ai drept să modifici inventarul.",notSaved:m=>"Nu s-a salvat: "+m,busy:"Serviciul Microsoft e ocupat. Încearcă din nou."},
+  noInvRight:"Nu ai drept să modifici inventarul.",notSaved:m=>"Nu s-a salvat: "+m,busy:"Serviciul Microsoft e ocupat. Încearcă din nou.",
+  tabLive:"Situație live",tabRep:"Rapoarte",prevDay:"Ziua anterioară",nextDay:"Ziua următoare",refreshBtn:"Actualizează",updatedAt:x=>"Actualizat la "+x+" · se reîmprospătează automat",
+  nowOut:"La profesori acum",nowNone:"Niciun echipament nu e folosit în acest moment.",outOf:(u,q)=>u+" din "+q+" folosite",
+  dayList:"Toate rezervările zilei",dayCount:n=>n===1?"1 rezervare":n+" rezervări",dayNone:"Nicio rezervare în această zi.",
+  st_run:"În curs",st_next:"Urmează",st_done:"Încheiată",
+  colDate:"Data",colLessons:"Ore",colEq:"Echipament",colQty:"Buc.",colTeacher:"Profesor",colEmail:"Email",colClass:"Clasa",colNote:"Notă",colBooked:"Rezervat la",colStatus:"Stare",colUtil:"Utilizare",
+  colFrom:"De la ora",colTo:"Până la ora",colTime:"Interval orar",csvName:"rezervari",
+  repTitle:"Raport rezervări",fromL:"De la",toL:"Până la",allEq:"Toate echipamentele",teacherL:"Profesor",teacherPh:"nume sau email",
+  pThisWeek:"Săptămâna aceasta",pLastWeek:"Săptămâna trecută",pThisMonth:"Luna aceasta",pLastMonth:"Luna trecută",pSchoolYear:"Anul școlar",
+  runRep:"Generează raportul",repLoading:"Se generează raportul…",rangeErr:"Alege o dată de început care să fie înaintea datei de sfârșit.",
+  kBookings:"Rezervări",kItems:"Bucăți rezervate",kUnitH:"Bucăți × ore",kTeachers:"Profesori",
+  byEq:"Pe echipament",byTeacher:"Pe profesor",details:"Toate rezervările",
+  csvBtn:"Descarcă pentru Excel (CSV)",printBtn:"Tipărește / PDF",repNone:"Nicio rezervare în perioada aleasă.",
+  utilHint:wd=>"Utilizare = bucăți × ore rezervate, împărțit la bucăți × ore disponibile în cele "+wd+" zile lucrătoare (după stocul actual).",
+  repNote:"Rezervările anulate sunt șterse, deci nu apar în raport."},
 
 en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking",
   tabCal:"Booking schedule",tabMine:"My bookings",tabInv:"Inventory",prevWeek:"Previous week",nextWeek:"Next week",today:"Today",
@@ -259,7 +300,21 @@ en:{locale:"en-GB",schoolDefault:"School equipment",appTitle:"Equipment booking"
   addEq:"Add equipment",quick:"Quick:",quickNames:["Laptops","iPads","Mobile projector","Document camera","Portable speakers"],
   nameL:"Name",pcsL:"Quantity",noteEqL:"Note (location, accessories)",namePh:"e.g. Laptops",qtyPh:"e.g. 25",noteEqPh:"e.g. Cabinet in room 14, with chargers",
   save:"Save",addBtn:"Add to inventory",cancelEdit:"Cancel",saved:"Saved",added:e=>e+" was added",fillErr:"Enter a name and a quantity of at least 1.",
-  noInvRight:"You aren't allowed to change the inventory.",notSaved:m=>"Not saved: "+m,busy:"The Microsoft service is busy. Try again."},
+  noInvRight:"You aren't allowed to change the inventory.",notSaved:m=>"Not saved: "+m,busy:"The Microsoft service is busy. Try again.",
+  tabLive:"Live overview",tabRep:"Reports",prevDay:"Previous day",nextDay:"Next day",refreshBtn:"Refresh",updatedAt:x=>"Updated at "+x+" · refreshes automatically",
+  nowOut:"With teachers right now",nowNone:"No equipment is in use right now.",outOf:(u,q)=>u+" of "+q+" in use",
+  dayList:"All bookings for the day",dayCount:n=>n===1?"1 booking":n+" bookings",dayNone:"No bookings on this day.",
+  st_run:"In use",st_next:"Upcoming",st_done:"Finished",
+  colDate:"Date",colLessons:"Lessons",colEq:"Equipment",colQty:"Qty",colTeacher:"Teacher",colEmail:"Email",colClass:"Class",colNote:"Note",colBooked:"Booked on",colStatus:"Status",colUtil:"Utilisation",
+  colFrom:"From lesson",colTo:"To lesson",colTime:"Time",csvName:"bookings",
+  repTitle:"Booking report",fromL:"From",toL:"To",allEq:"All equipment",teacherL:"Teacher",teacherPh:"name or email",
+  pThisWeek:"This week",pLastWeek:"Last week",pThisMonth:"This month",pLastMonth:"Last month",pSchoolYear:"School year",
+  runRep:"Run report",repLoading:"Building the report…",rangeErr:"Choose a start date before the end date.",
+  kBookings:"Bookings",kItems:"Items booked",kUnitH:"Item-lessons",kTeachers:"Teachers",
+  byEq:"By equipment",byTeacher:"By teacher",details:"All bookings",
+  csvBtn:"Download for Excel (CSV)",printBtn:"Print / PDF",repNone:"No bookings in the chosen period.",
+  utilHint:wd=>"Utilisation = booked item-lessons divided by the item-lessons available on the "+wd+" weekdays in the period (based on current stock).",
+  repNote:"Cancelled bookings are deleted, so they don't appear in the report."},
 
 de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Reservierung von Schulgeräten",
   tabCal:"Belegungsplan",tabMine:"Meine Reservierungen",tabInv:"Inventar",prevWeek:"Vorige Woche",nextWeek:"Nächste Woche",today:"Heute",
@@ -292,7 +347,21 @@ de:{locale:"de-DE",schoolDefault:"Schulausstattung",appTitle:"Reservierung von S
   addEq:"Gerät hinzufügen",quick:"Schnell:",quickNames:["Laptops","iPads","Mobiler Beamer","Dokumentenkamera","Tragbare Lautsprecher"],
   nameL:"Bezeichnung",pcsL:"Anzahl",noteEqL:"Notiz (Standort, Zubehör)",namePh:"z. B. Laptops",qtyPh:"z. B. 25",noteEqPh:"z. B. Schrank in Raum 14, mit Ladegeräten",
   save:"Speichern",addBtn:"Zum Inventar hinzufügen",cancelEdit:"Abbrechen",saved:"Gespeichert",added:e=>e+" wurde hinzugefügt",fillErr:"Geben Sie eine Bezeichnung und eine Anzahl von mindestens 1 ein.",
-  noInvRight:"Sie dürfen das Inventar nicht ändern.",notSaved:m=>"Nicht gespeichert: "+m,busy:"Der Microsoft-Dienst ist ausgelastet. Bitte erneut versuchen."}
+  noInvRight:"Sie dürfen das Inventar nicht ändern.",notSaved:m=>"Nicht gespeichert: "+m,busy:"Der Microsoft-Dienst ist ausgelastet. Bitte erneut versuchen.",
+  tabLive:"Live-Übersicht",tabRep:"Berichte",prevDay:"Vorheriger Tag",nextDay:"Nächster Tag",refreshBtn:"Aktualisieren",updatedAt:x=>"Aktualisiert um "+x+" · aktualisiert sich automatisch",
+  nowOut:"Gerade ausgeliehen",nowNone:"Im Moment ist kein Gerät im Einsatz.",outOf:(u,q)=>u+" von "+q+" im Einsatz",
+  dayList:"Alle Reservierungen des Tages",dayCount:n=>n===1?"1 Reservierung":n+" Reservierungen",dayNone:"Keine Reservierungen an diesem Tag.",
+  st_run:"Läuft",st_next:"Geplant",st_done:"Beendet",
+  colDate:"Datum",colLessons:"Stunden",colEq:"Gerät",colQty:"Anz.",colTeacher:"Lehrkraft",colEmail:"E-Mail",colClass:"Klasse",colNote:"Notiz",colBooked:"Gebucht am",colStatus:"Status",colUtil:"Auslastung",
+  colFrom:"Von Stunde",colTo:"Bis Stunde",colTime:"Uhrzeit",csvName:"reservierungen",
+  repTitle:"Reservierungsbericht",fromL:"Von",toL:"Bis",allEq:"Alle Geräte",teacherL:"Lehrkraft",teacherPh:"Name oder E-Mail",
+  pThisWeek:"Diese Woche",pLastWeek:"Letzte Woche",pThisMonth:"Dieser Monat",pLastMonth:"Letzter Monat",pSchoolYear:"Schuljahr",
+  runRep:"Bericht erstellen",repLoading:"Bericht wird erstellt…",rangeErr:"Das Startdatum muss vor dem Enddatum liegen.",
+  kBookings:"Reservierungen",kItems:"Reservierte Geräte",kUnitH:"Geräte × Stunden",kTeachers:"Lehrkräfte",
+  byEq:"Nach Gerät",byTeacher:"Nach Lehrkraft",details:"Alle Reservierungen",
+  csvBtn:"Für Excel herunterladen (CSV)",printBtn:"Drucken / PDF",repNone:"Keine Reservierungen im gewählten Zeitraum.",
+  utilHint:wd=>"Auslastung = reservierte Geräte × Stunden geteilt durch die verfügbaren Geräte × Stunden an den "+wd+" Wochentagen im Zeitraum (nach aktuellem Bestand).",
+  repNote:"Stornierte Reservierungen werden gelöscht und erscheinen daher nicht im Bericht."}
 };
 function pickLang(){
   let saved=null;try{saved=localStorage.getItem("rez-lang")}catch(e){}
@@ -318,7 +387,9 @@ const GRAPH="https://graph.microsoft.com/v1.0";
 
 const S={pca:null,account:null,admin:false,siteId:null,eqList:null,bkList:null,
   eq:[],week:[],weekLoaded:false,mine:[],mineLoaded:false,sel:null,weekStart:monday(new Date()),tab:"cal",
-  open:null,confirm:null,editing:null,busy:false};
+  open:null,confirm:null,editing:null,busy:false,
+  liveDate:null,live:[],liveLoaded:false,liveAt:null,
+  rep:{from:null,to:null,eq:"",q:"",rows:null,range:null,loading:false}};
 
 // ---------- helpers ----------
 function h(tag,attrs,...kids){const el=document.createElement(tag);
@@ -381,17 +452,24 @@ async function createLists(){
     columns:[{name:"Cantitate",number:{}},{name:"Nota",text:{}}]}},SETUP_SCOPES);S.eqList=r.id}
   if(!S.bkList){const r=await g(base,{method:"POST",body:{displayName:LIST_BK,list:{template:"genericList"},
     columns:[{name:"EchipamentId",text:{},indexed:true},{name:"Data",text:{},indexed:true},{name:"OraStart",number:{}},{name:"OraSfarsit",number:{}},
-      {name:"Cantitate",number:{}},{name:"Clasa",text:{}},{name:"Nota",text:{}}]}},SETUP_SCOPES);S.bkList=r.id}}
+      {name:"Cantitate",number:{}},{name:"Clasa",text:{}},{name:"Nota",text:{}},{name:"Anulat",text:{}},{name:"AnulatDe",text:{}}]}},SETUP_SCOPES);S.bkList=r.id}}
+// Coloanele pentru anulări au apărut ulterior: le adaugă adminul în listele create mai demult.
+async function ensureCancelColumns(){
+  const cols=await gAll("/sites/"+S.siteId+"/lists/"+S.bkList+"/columns?$select=name");const have=new Set(cols.map(c=>c.name));
+  for(const name of ["Anulat","AnulatDe"])if(!have.has(name))
+    await g("/sites/"+S.siteId+"/lists/"+S.bkList+"/columns",{method:"POST",body:{name,text:{}}},SETUP_SCOPES);}
 function items(list){return "/sites/"+S.siteId+"/lists/"+list+"/items"}
 function mapBk(it){const f=it.fields||{};const u=(it.createdBy||{}).user||{};
   return {id:it.id,eq:String(f.EchipamentId||""),date:f.Data,from:+f.OraStart,to:+f.OraSfarsit,qty:+f.Cantitate||0,cls:f.Clasa||"",note:f.Nota||"",
-    byId:u.id||"",byName:u.displayName||"",byEmail:u.email||""}}
+    byId:u.id||"",byName:u.displayName||"",byEmail:u.email||"",created:it.createdDateTime||"",
+    cancelled:f.Anulat||"",cancelledBy:f.AnulatDe||""}}
 async function loadEq(){const r=await gAll(items(S.eqList)+"?$expand=fields($select=Title,Cantitate,Nota)&$top=500");
   S.eq=r.map(it=>({id:it.id,name:(it.fields||{}).Title||"",qty:+(it.fields||{}).Cantitate||0,note:(it.fields||{}).Nota||""}))
     .filter(e=>e.name&&e.qty>0).sort((a,b)=>a.name.localeCompare(b.name,L.locale))}
-async function loadRange(a,b){const q="?$expand=fields($select=Title,EchipamentId,Data,OraStart,OraSfarsit,Cantitate,Clasa,Nota)&$select=id,createdBy"+
+// withCancelled=false: doar rezervările active (pentru disponibilitate); true: și cele anulate (live, rapoarte).
+async function loadRange(a,b,withCancelled){const q="?$expand=fields($select=Title,EchipamentId,Data,OraStart,OraSfarsit,Cantitate,Clasa,Nota,Anulat,AnulatDe)&$select=id,createdBy,createdDateTime"+
   "&$filter="+encodeURIComponent("fields/Data ge '"+a+"' and fields/Data le '"+b+"'")+"&$top=999";
-  return (await gAll(items(S.bkList)+q)).map(mapBk).filter(x=>x.date&&x.from>=1)}
+  return (await gAll(items(S.bkList)+q)).map(mapBk).filter(x=>x.date&&x.from>=1&&(withCancelled||!x.cancelled))}
 async function loadWeek(){const key=iso(S.weekStart);const rows=await loadRange(key,iso(addDays(S.weekStart,4)));if(iso(S.weekStart)!==key)return;S.week=rows;S.weekLoaded=true}
 async function loadMine(){const td=todayIso();const rows=await loadRange(td,iso(addDays(new Date(),370)));S.mine=rows.filter(isMine);S.mineLoaded=true}
 
@@ -421,6 +499,7 @@ async function boot(){
       screen(emptyBox(t("firstRunT"),t("firstRunP"),btn))}
     else screen(emptyBox(t("notConfT"),t("notReadyP")));
     return}
+  if(S.admin){try{await ensureCancelColumns()}catch(e){notice(t("colsFail",e.message))}}
   start();
 }
 function showLogin(){
@@ -430,23 +509,30 @@ function showLogin(){
     h("button",{class:"btn primary big",on:{click:()=>S.pca.loginRedirect({scopes:SCOPES})}},ms))));
 }
 async function start(){
-  screen();renderTabs();
+  screen();
+  for(const b of document.querySelectorAll("#tabs .adm"))b.hidden=!S.admin;
+  renderTabs();
   try{await loadEq();renderChips();renderCal();await loadWeek()}catch(e){notice(t("loadFail",e.message))}
   renderCal();
-  setInterval(()=>{if(document.visibilityState==="visible"&&$("overlay").hidden&&!S.busy)refresh()},30000);
+  // Live-ul se actualizează la 15 s, restul la 30 s.
+  let tick=0;
+  setInterval(()=>{tick++;if(document.visibilityState==="visible"&&$("overlay").hidden&&!S.busy&&(S.tab==="live"||tick%2===0))refresh()},15000);
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("overlay").hidden)refresh()});
 }
 async function refresh(){
   try{await loadWeek();notice("");renderChips();
-    if(S.tab==="cal")renderCal();if(S.tab==="mine"){await loadMine();renderMine()}if(S.tab==="inv")renderInv()}
+    if(S.tab==="cal")renderCal();if(S.tab==="mine"){await loadMine();renderMine()}if(S.tab==="inv")renderInv();
+    if(S.tab==="live"&&S.confirm==null){await loadLive();renderLive()}}
   catch(e){notice(t("refreshFail"))}}
 
 // ---------- tabs ----------
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;S.tab=b.dataset.tab;renderTabs()});
 function renderTabs(){for(const b of document.querySelectorAll("#tabs button"))b.setAttribute("aria-selected",b.dataset.tab===S.tab);
-  $("view-cal").hidden=S.tab!=="cal";$("view-mine").hidden=S.tab!=="mine";$("view-inv").hidden=S.tab!=="inv";
+  for(const k of ["cal","mine","inv","live","rep"])$("view-"+k).hidden=S.tab!==k;
   if(S.tab==="mine"){renderMine();loadMine().then(renderMine).catch(()=>notice(t("mineFail")))}
-  if(S.tab==="inv")renderInv(); if(S.tab==="cal")renderCal();}
+  if(S.tab==="inv")renderInv(); if(S.tab==="cal")renderCal();
+  if(S.tab==="live")goLive(S.liveDate||todayIso());
+  if(S.tab==="rep")renderRep();}
 async function goWeek(d){S.weekStart=d;S.weekLoaded=false;renderCal();try{await loadWeek()}catch(e){notice(t("weekFail"))}renderCal()}
 $("prevw").onclick=()=>goWeek(addDays(S.weekStart,-7));
 $("nextw").onclick=()=>goWeek(addDays(S.weekStart,7));
@@ -546,7 +632,13 @@ function bookForm(eq,date,p){
 function cancelBtn(b,after){
   if(S.confirm===b.id)return h("span",{class:"actions"},
     h("button",{class:"btn sm danger solid",on:{click:async ev=>{ev.target.disabled=true;
-      try{await g(items(S.bkList)+"/"+b.id,{method:"DELETE"});toast(t("cancelled"));S.week=S.week.filter(x=>x.id!==b.id);S.mine=S.mine.filter(x=>x.id!==b.id)}
+      try{
+        // Anularea marchează rezervarea (Anulat = momentul, AnulatDe = cine), ca să rămână în rapoarte.
+        const stamp=new Date().toISOString(),who=S.account.name||S.account.username||"";
+        try{await g(items(S.bkList)+"/"+b.id+"/fields",{method:"PATCH",body:{Anulat:stamp,AnulatDe:who}})}
+        catch(x){if(x.status===400)await g(items(S.bkList)+"/"+b.id,{method:"DELETE"});else throw x}// coloanele lipsesc încă
+        toast(t("cancelled"));S.week=S.week.filter(x=>x.id!==b.id);S.mine=S.mine.filter(x=>x.id!==b.id);
+        for(const x of S.live)if(x.id===b.id){x.cancelled=stamp;x.cancelledBy=who}}
       catch(x){toast(x.status===403?t("cancelOwn"):t("cancelFail"))}
       S.confirm=null;after();renderCal()}}},t("yesCancel")),
     h("button",{class:"btn sm",on:{click:()=>{S.confirm=null;after()}}},t("no")));
@@ -609,6 +701,146 @@ function eqForm(e){
     h("label",{class:"f"},t("nameL"),name),h("label",{class:"f"},t("pcsL"),qty),h("label",{class:"f full-span"},t("noteEqL"),note),
     h("div",{class:"full-span actions"},h("button",{class:"btn primary",type:"submit"},e?t("save"):t("addBtn")),
       e?h("button",{class:"btn",type:"button",on:{click:()=>{S.editing=null;renderInv()}}},t("cancelEdit")):null,err));
+}
+
+// ---------- admin: shared helpers ----------
+const FX={time:new Intl.DateTimeFormat(L.locale,{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
+  dt:new Intl.DateTimeFormat(L.locale,{dateStyle:"short",timeStyle:"short"}),
+  pct:new Intl.NumberFormat(L.locale,{style:"percent",maximumFractionDigits:0}),num:new Intl.NumberFormat(L.locale)};
+function mins(s){const[a,b]=String(s||"0:0").split(":").map(Number);return a*60+b}
+function eqName(id){const e=eqById(id);return e?e.name:t("eqDeleted")}
+function stateOf(b){const td=todayIso();if(b.date<td)return"done";if(b.date>td)return"next";
+  const n=new Date(),m=n.getHours()*60+n.getMinutes();
+  const s=mins((PERIODS[b.from-1]||{}).s),e=mins((PERIODS[b.to-1]||{}).e);return m>=e?"done":m>=s?"run":"next"}
+function teacherCell(b){return h("td",null,h("b",null,b.byName||"—"),b.byEmail?h("div",{class:"hint"},b.byEmail):null)}
+function fmtCreated(s){if(!s)return"";const d=new Date(s);return isNaN(d)?"":FX.dt.format(d)}
+
+// ---------- admin: live ----------
+async function loadLive(){const d=S.liveDate;const rows=await loadRange(d,d);if(d!==S.liveDate)return;S.live=rows;S.liveLoaded=true;S.liveAt=new Date()}
+function goLive(d){if(d!==S.liveDate){S.liveDate=d;S.liveLoaded=false;S.confirm=null}renderLive();
+  loadLive().then(renderLive).catch(()=>notice(t("weekFail")))}
+function liveTable(rows,full){
+  const head=[t("colLessons"),t("colEq"),t("colQty"),t("colTeacher"),t("colClass"),t("colNote")];
+  if(full)head.push(t("colStatus"),t("colBooked"),"");
+  const tb=h("tbody");
+  for(const b of rows){const st=stateOf(b);
+    tb.append(h("tr",null,h("td",{class:"nw num"},pr(b)),h("td",null,eqName(b.eq)),h("td",{class:"n"},b.qty),teacherCell(b),h("td",null,b.cls),h("td",null,b.note),
+      full?h("td",null,h("span",{class:"pill "+st},t("st_"+st))):null,
+      full?h("td",{class:"hint nw"},fmtCreated(b.created)):null,
+      full?h("td",{class:"noprint"},st!=="done"?cancelBtn(b,renderLive):null):null))}
+  return h("div",{class:"tablebox"},h("table",{class:"rt"},h("thead",null,h("tr",null,head.map((x,i)=>h("th",{class:i===2?"n":""},x)))),tb));
+}
+function renderLive(){
+  const v=$("view-live");const d=S.liveDate;const td=todayIso();
+  const nav=h("div",{class:"weeknav noprint"},
+    h("button",{class:"btn","aria-label":t("prevDay"),on:{click:()=>goLive(iso(addDays(parse(d),-1)))}},"‹"),
+    h("button",{class:"btn","aria-label":t("nextDay"),on:{click:()=>goLive(iso(addDays(parse(d),1)))}},"›"),
+    h("button",{class:"btn",on:{click:()=>goLive(td)}},t("today")),
+    h("button",{class:"btn",on:{click:()=>loadLive().then(renderLive).catch(()=>notice(t("refreshFail")))}},t("refreshBtn")));
+  const head=h("div",{class:"bar"},h("div",null,h("h2",null,longDay(d)+(d===td?t("todaySfx"):"")),
+    h("span",{class:"hint num"},S.liveLoaded&&S.liveAt?t("updatedAt",FX.time.format(S.liveAt)):t("loading"))),nav);
+  if(!S.liveLoaded){v.replaceChildren(head,emptyBox(t("loading"),""));return}
+  const rows=S.live.slice().sort((a,b)=>a.from-b.from||a.to-b.to||eqName(a.eq).localeCompare(eqName(b.eq),L.locale));
+  const parts=[head];
+  if(d===td){
+    const now=rows.filter(b=>stateOf(b)==="run");
+    const box=h("div",{class:"panel"},h("h2",null,t("nowOut")));
+    if(!now.length)box.append(h("p",{class:"muted",style:"margin:0"},t("nowNone")));
+    else{const usage=h("div",{class:"usage"});
+      for(const e of S.eq){const u=now.filter(b=>b.eq===e.id).reduce((s,b)=>s+b.qty,0);if(!u)continue;
+        const r=u/e.qty;usage.append(h("b",null,e.name),h("span",{class:"meter"},h("i",{style:"width:"+Math.min(100,Math.round(r*100))+"%;background:var(--"+(r>=1?"bad":r>=.75?"warn":"ok")+")"})),
+          h("span",{class:"pill acc num"},t("outOf",u,e.qty)))}
+      box.append(usage,liveTable(now,false))}
+    parts.push(box)}
+  parts.push(h("div",{class:"panel"},h("h2",null,t("dayList")),h("span",{class:"hint num"},t("dayCount",rows.length)),
+    rows.length?liveTable(rows,true):h("p",{class:"muted",style:"margin:0"},t("dayNone"))));
+  v.replaceChildren(...parts);
+}
+
+// ---------- admin: reports ----------
+function presetRange(k){const n=new Date();let a,b;
+  if(k==="tw"){a=monday(n);b=addDays(a,4)}
+  else if(k==="lw"){a=addDays(monday(n),-7);b=addDays(a,4)}
+  else if(k==="tm"){a=new Date(n.getFullYear(),n.getMonth(),1);b=new Date(n.getFullYear(),n.getMonth()+1,0)}
+  else if(k==="lm"){a=new Date(n.getFullYear(),n.getMonth()-1,1);b=new Date(n.getFullYear(),n.getMonth(),0)}
+  else{const y=n.getMonth()>=8?n.getFullYear():n.getFullYear()-1;a=new Date(y,8,1);b=new Date(y+1,7,31)}
+  return[iso(a),iso(b)]}
+function weekdays(a,b){let n=0;for(let d=parse(a);iso(d)<=b;d=addDays(d,1)){const w=d.getDay();if(w>0&&w<6)n++}return n}
+function renderRep(){
+  const R=S.rep;if(!R.from){[R.from,R.to]=presetRange("tm")}
+  const v=$("view-rep");
+  const from=h("input",{type:"date",value:R.from,on:{change:()=>R.from=from.value}});
+  const to=h("input",{type:"date",value:R.to,on:{change:()=>R.to=to.value}});
+  const eqSel=h("select",{on:{change:()=>{R.eq=eqSel.value;renderRepOut()}}},h("option",{value:""},t("allEq")),S.eq.map(e=>h("option",{value:e.id,selected:R.eq===e.id},e.name)));
+  const q=h("input",{type:"search",value:R.q,placeholder:t("teacherPh"),on:{input:()=>{R.q=q.value;renderRepOut()}}});
+  const err=h("div",{class:"err",hidden:true});
+  const run=h("button",{class:"btn primary",type:"submit"},t("runRep"));
+  const presets=h("div",{class:"chips"},[["tw","pThisWeek"],["lw","pLastWeek"],["tm","pThisMonth"],["lm","pLastMonth"],["sy","pSchoolYear"]].map(([k,lbl])=>
+    h("button",{class:"chip",type:"button",on:{click:()=>{[R.from,R.to]=presetRange(k);from.value=R.from;to.value=R.to;runRep(run,err)}}},t(lbl))));
+  const form=h("form",{class:"grid",on:{submit:e=>{e.preventDefault();runRep(run,err)}}},
+    h("div",{class:"full-span"},presets),
+    h("label",{class:"f"},t("fromL"),from),h("label",{class:"f"},t("toL"),to),
+    h("label",{class:"f"},t("colEq"),eqSel),h("label",{class:"f"},t("teacherL"),q),
+    h("div",{class:"full-span actions"},run,err));
+  v.replaceChildren(h("div",{class:"panel noprint"},h("h2",null,t("repTitle")),form),h("div",{id:"rep-out",style:"display:flex;flex-direction:column;gap:14px"}));
+  renderRepOut();
+}
+async function runRep(btn,err){
+  const R=S.rep;err.hidden=true;
+  if(!R.from||!R.to||R.from>R.to){err.textContent=t("rangeErr");err.hidden=false;return}
+  R.loading=true;btn.disabled=true;renderRepOut();
+  try{const a=R.from,b=R.to;R.rows=await loadRange(a,b);R.range=[a,b]}
+  catch(e){err.textContent=t("loadFail",e.message);err.hidden=false}
+  R.loading=false;btn.disabled=false;renderRepOut();
+}
+function rtable(head,rows,numCols){
+  return h("div",{class:"tablebox"},h("table",{class:"rt"},
+    h("thead",null,h("tr",null,head.map((x,i)=>h("th",{class:numCols.includes(i)?"n":""},x)))),
+    h("tbody",null,rows.map(r=>h("tr",null,r.map((c,i)=>c instanceof Node&&c.tagName==="TD"?c:h("td",{class:numCols.includes(i)?"n":""},c)))))));
+}
+function repFiltered(){const R=S.rep;const q=R.q.trim().toLowerCase();
+  return R.rows.filter(x=>(!R.eq||x.eq===R.eq)&&(!q||(x.byName+" "+x.byEmail).toLowerCase().includes(q)))
+    .sort((x,y)=>x.date.localeCompare(y.date)||x.from-y.from||eqName(x.eq).localeCompare(eqName(y.eq),L.locale))}
+function renderRepOut(){
+  const out=$("rep-out");if(!out)return;const R=S.rep;
+  if(R.loading){out.replaceChildren(emptyBox(t("repLoading"),""));return}
+  if(!R.rows){out.replaceChildren();return}
+  const[a,b]=R.range;const rows=repFiltered();
+  const sub=fmtDay(a)+" – "+fmtDay(b)+(R.eq?" · "+eqName(R.eq):"")+(R.q.trim()?" · „"+R.q.trim()+"“":"");
+  const actions=h("div",{class:"actions noprint"},
+    h("button",{class:"btn",disabled:!rows.length,on:{click:()=>downloadCsv(rows,a,b)}},t("csvBtn")),
+    h("button",{class:"btn",on:{click:()=>window.print()}},t("printBtn")));
+  const top=h("div",{class:"bar"},h("div",null,h("h2",null,t("repTitle")),h("span",{class:"hint num"},sub)),actions);
+  if(!rows.length){out.replaceChildren(h("div",{class:"panel"},top,h("p",{class:"muted",style:"margin:0"},t("repNone"))));return}
+  const ul=x=>x.qty*(x.to-x.from+1);
+  const byT=new Map(),byE=new Map();
+  for(const x of rows){
+    const k=(x.byEmail||x.byName||"?").toLowerCase();
+    const tt=byT.get(k)||{name:x.byName||x.byEmail||"—",email:x.byEmail,n:0,items:0,ul:0};tt.n++;tt.items+=x.qty;tt.ul+=ul(x);byT.set(k,tt);
+    const e=byE.get(x.eq)||{id:x.eq,n:0,items:0,ul:0};e.n++;e.items+=x.qty;e.ul+=ul(x);byE.set(x.eq,e)}
+  const wd=weekdays(a,b);const sum=f=>rows.reduce((s,x)=>s+f(x),0);
+  const kpis=h("div",{class:"kpis"},
+    [[rows.length,"kBookings"],[sum(x=>x.qty),"kItems"],[sum(ul),"kUnitH"],[byT.size,"kTeachers"]].map(([n,l])=>h("div",{class:"kpi"},h("b",null,FX.num.format(n)),h("span",null,t(l)))));
+  const eqRows=[...byE.values()].sort((x,y)=>y.ul-x.ul).map(e=>{const eq=eqById(e.id);const avail=eq?eq.qty*NP*wd:0;
+    return[eqName(e.id),e.n,e.items,e.ul,avail?FX.pct.format(e.ul/avail):"—"]});
+  const tRows=[...byT.values()].sort((x,y)=>y.ul-x.ul||x.name.localeCompare(y.name,L.locale)).map(x=>[h("td",null,h("b",null,x.name)),x.email,x.n,x.items,x.ul]);
+  const dRows=rows.map(x=>[h("td",{class:"nw"},fmtDay(x.date)),h("td",{class:"nw num"},pr(x)),eqName(x.eq),x.qty,teacherCell(x),x.cls,x.note,h("td",{class:"hint nw"},fmtCreated(x.created))]);
+  out.replaceChildren(h("div",{class:"panel"},top,kpis,
+    h("h3",null,t("byEq")),rtable([t("colEq"),t("kBookings"),t("kItems"),t("kUnitH"),t("colUtil")],eqRows,[1,2,3,4]),
+    h("p",{class:"hint",style:"margin:0"},t("utilHint",wd)),
+    h("h3",null,t("byTeacher")),rtable([t("colTeacher"),t("colEmail"),t("kBookings"),t("kItems"),t("kUnitH")],tRows,[2,3,4]),
+    h("h3",null,t("details")+" ("+rows.length+")"),rtable([t("colDate"),t("colLessons"),t("colEq"),t("colQty"),t("colTeacher"),t("colClass"),t("colNote"),t("colBooked")],dRows,[3]),
+    h("p",{class:"hint",style:"margin:0"},t("repNote"))));
+}
+function downloadCsv(rows,a,b){
+  const sep=LANG==="en"?",":";";
+  const esc=v=>{v=v==null?"":String(v);return /[";,\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const lines=[[t("colDate"),t("colFrom"),t("colTo"),t("colTime"),t("colEq"),t("colQty"),t("colTeacher"),t("colEmail"),t("colClass"),t("colNote"),t("colBooked")].map(esc).join(sep)];
+  for(const x of rows){const pa=PERIODS[x.from-1]||{},pz=PERIODS[x.to-1]||{};
+    lines.push([x.date,x.from,x.to,(pa.s||"")+"–"+(pz.e||""),eqName(x.eq),x.qty,x.byName,x.byEmail,x.cls,x.note,fmtCreated(x.created)].map(esc).join(sep))}
+  const url=URL.createObjectURL(new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}));
+  const lnk=h("a",{href:url,download:t("csvName")+"_"+a+"_"+b+".csv"});document.body.append(lnk);lnk.click();lnk.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
 
 boot().catch(e=>screen(emptyBox(t("errorT"),e.message||String(e))));
